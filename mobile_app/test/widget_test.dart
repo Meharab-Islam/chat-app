@@ -41,8 +41,8 @@ void main() {
       AuthService.serverClientId,
       '366527404345-qf56pvo90k61dhqsqlnkbs23kgffoa1v.apps.googleusercontent.com',
     );
-    expect(AuthService.realDeviceBaseUrl, 'http://192.168.0.116:5050/api');
-    expect(SocketService.defaultSocketUrl, 'http://192.168.0.116:5050');
+    expect(AuthService.realDeviceBaseUrl, 'http://107.174.137.29:5055/api');
+    expect(SocketService.defaultSocketUrl, 'http://107.174.137.29:5055');
 
     final authService = AuthService();
     authService.restoreUser(const UserModel(

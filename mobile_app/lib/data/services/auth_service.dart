@@ -14,9 +14,10 @@ class AuthService {
   static const String iOSClientId =
       '366527404345-io77q4ek23teumbg96bdh8iumsudp8c2.apps.googleusercontent.com';
 
-  static const String realDeviceBaseUrl = 'http://192.168.0.116:5050/api';
-  static const String emulatorBaseUrl = 'http://10.0.2.2:5050/api';
-  static const String localhostBaseUrl = 'http://localhost:5050/api';
+  static const String serverBaseUrl = 'http://107.174.137.29:5055/api';
+  static const String realDeviceBaseUrl = serverBaseUrl;
+  static const String emulatorBaseUrl = serverBaseUrl;
+  static const String localhostBaseUrl = serverBaseUrl;
 
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     clientId: !kIsWeb && (Platform.isIOS || Platform.isMacOS)

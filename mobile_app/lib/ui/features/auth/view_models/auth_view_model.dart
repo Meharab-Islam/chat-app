@@ -37,7 +37,7 @@ class AuthViewModel extends ChangeNotifier {
           err.contains('SocketException') ||
           err.contains('Failed to connect')) {
         _errorMessage =
-            'Cannot reach backend server. Make sure your server is running on port 5050.';
+            'Cannot reach backend server. Make sure your server is running on port 5055.';
       } else {
         _errorMessage = err.replaceAll('Exception: ', '');
       }

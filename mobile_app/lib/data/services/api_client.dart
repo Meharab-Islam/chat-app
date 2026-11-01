@@ -1,19 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
-  static const String realDeviceHost = 'http://192.168.0.116:5050';
-  static const String emulatorHost = 'http://10.0.2.2:5050';
-  static const String localhostHost = 'http://localhost:5050';
+  static const String serverHost = 'http://107.174.137.29:5055';
+  static const String realDeviceHost = serverHost;
+  static const String emulatorHost = serverHost;
+  static const String localhostHost = serverHost;
 
-  static String get baseHost {
-    if (kIsWeb) return localhostHost;
-    if (Platform.isAndroid) return realDeviceHost;
-    return realDeviceHost;
-  }
+  static String get baseHost => serverHost;
 
   static String get baseUrl => '$baseHost/api';
 

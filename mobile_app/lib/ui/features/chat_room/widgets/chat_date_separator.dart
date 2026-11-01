@@ -59,3 +59,4 @@ class ChatDateSeparator extends StatelessWidget {
     );
   }
 }
+

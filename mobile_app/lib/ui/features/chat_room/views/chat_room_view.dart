@@ -201,17 +201,9 @@ class _ChatRoomContent extends StatelessWidget {
                   const Icon(Icons.reply, size: 16),
                   SizedBox(width: 8.w),
                   Expanded(
-                    child: Text(
-                      'Replying to: ${vm.replyingTo!.text}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 12.sp),
-                    ),
+                    child: Text('Replying to: ${vm.replyingTo!.text}', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.sp)),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close, size: 16),
-                    onPressed: () => vm.setReplyingTo(null),
-                  ),
+                  IconButton(icon: const Icon(Icons.close, size: 16), onPressed: () => vm.setReplyingTo(null)),
                 ],
               ),
             ),
@@ -224,32 +216,22 @@ class _ChatRoomContent extends StatelessWidget {
             ),
           ChatInputBarWidget(
             hasSelectedMedia: vm.selectedMedia.isNotEmpty,
-            onSendText: (text) {
-              if (vm.selectedMedia.isNotEmpty) {
-                vm.sendMediaMessage(caption: text);
-              } else {
-                vm.sendTextMessage(text);
-              }
-            },
+            onSendText: (t) => vm.selectedMedia.isNotEmpty ? vm.sendMediaMessage(caption: t) : vm.sendTextMessage(t),
             onPickMedia: vm.pickMedia,
             onSendFiles: vm.pickAndSendFiles,
             onSendVoice: vm.sendVoiceMessage,
           ),
         ],
       ),
+    ),
     );
   }
 
   void _handleDownload(BuildContext context, ChatRoomViewModel vm, MessageModel msg) async {
-    final success = await vm.downloadMediaToGallery(msg);
+    final ok = await vm.downloadMediaToGallery(msg);
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            success ? 'Saved to device gallery!' : 'Failed to save to gallery.',
-          ),
-          behavior: SnackBarBehavior.floating,
-        ),
+        SnackBar(content: Text(ok ? 'Saved to gallery!' : 'Failed to save.'), behavior: SnackBarBehavior.floating),
       );
     }
   }

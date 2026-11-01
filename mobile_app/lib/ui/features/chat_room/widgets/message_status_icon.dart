@@ -58,3 +58,4 @@ class MessageStatusIcon extends StatelessWidget {
     }
   }
 }
+

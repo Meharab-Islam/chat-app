@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../data/services/voice_recording_service.dart';
 import '../../../core/design_system/app_colors.dart';
-import '../../../core/design_system/app_spacing.dart';
 
 class ChatInputBarWidget extends StatefulWidget {
   final ValueChanged<String> onSendText;
@@ -149,7 +148,11 @@ class _ChatInputBarWidgetState extends State<ChatInputBarWidget> {
             padding: EdgeInsets.symmetric(horizontal: 14.w),
             decoration: BoxDecoration(
               color: isDark ? AppColors.darkCard : AppColors.lightCard,
-              borderRadius: AppSpacing.radiusXl,
+              borderRadius: BorderRadius.circular(22.r),
+              border: Border.all(
+                color: isDark ? Colors.white.withAlpha(12) : Colors.black.withAlpha(8),
+                width: 0.8,
+              ),
             ),
             child: TextField(
               controller: _controller,
@@ -177,6 +180,13 @@ class _ChatInputBarWidgetState extends State<ChatInputBarWidget> {
             decoration: BoxDecoration(
               color: primary,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: primary.withAlpha(isDark ? 70 : 90),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Center(
               child: Icon(

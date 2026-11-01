@@ -21,7 +21,7 @@ class AppColors {
   static const Color lightSurface = Color(0xFFF8FAFC);
   static const Color lightCard = Color(0xFFF1F5F9);
   static const Color lightBubbleSender = Color(0xFF2563EB);
-  static const Color lightBubbleReceiver = Color(0xFFF1F5F9);
+  static const Color lightBubbleReceiver = Color(0xFFFFFFFF);
   static const Color lightTextPrimary = Color(0xFF0F172A);
   static const Color lightTextSecondary = Color(0xFF64748B);
   static const Color lightDivider = Color(0xFFE2E8F0);
@@ -32,7 +32,7 @@ class AppColors {
   static const Color darkSurface = Color(0xFF0F0F11);
   static const Color darkCard = Color(0xFF18181B);
   static const Color darkBubbleSender = Color(0xFF2563EB);
-  static const Color darkBubbleReceiver = Color(0xFF1E2024);
+  static const Color darkBubbleReceiver = Color(0xFF1E2430);
   static const Color darkTextPrimary = Color(0xFFF8FAFC);
   static const Color darkTextSecondary = Color(0xFF94A3B8);
   static const Color darkDivider = Color(0xFF27272A);
