@@ -1,0 +1,10 @@
+node_modules
+dist
+.env
+.git
+.gitignore
+npm-debug.log
+graphify-out
+uploads/*
+!uploads/.gitkeep
+

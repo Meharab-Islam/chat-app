@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "366527404345",
+    "project_id": "click-live",
+    "storage_bucket": "click-live.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:366527404345:android:07ab9f46ae66d022b0f0e8",
+        "android_client_info": {
+          "package_name": "com.antigravity.chatapp.mobile_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "366527404345-sqo2ojttvsav5fbo3l604lhtr2v3cbgp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.antigravity.chatapp.mobile_app",
+            "certificate_hash": "861a8aaf2092ee68494cdd96456562c546ec7f65"
+          }
+        },
+        {
+          "client_id": "366527404345-qf56pvo90k61dhqsqlnkbs23kgffoa1v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBL3JZW6vDrhyKtjxRKZPVvKjEd3wy31SQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "366527404345-qf56pvo90k61dhqsqlnkbs23kgffoa1v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "366527404345-9rg29v1h3jpc6qi2t4kahf5l0reqpvki.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.softinglobal.clickLive"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:366527404345:android:efc86258c0fdb1b9b0f0e8",
+        "android_client_info": {
+          "package_name": "com.softinglobal.click_live"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "366527404345-qf56pvo90k61dhqsqlnkbs23kgffoa1v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBL3JZW6vDrhyKtjxRKZPVvKjEd3wy31SQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "366527404345-qf56pvo90k61dhqsqlnkbs23kgffoa1v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "366527404345-9rg29v1h3jpc6qi2t4kahf5l0reqpvki.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.softinglobal.clickLive"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

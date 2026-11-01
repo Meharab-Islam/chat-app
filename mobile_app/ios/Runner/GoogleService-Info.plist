@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>366527404345-io77q4ek23teumbg96bdh8iumsudp8c2.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.366527404345-io77q4ek23teumbg96bdh8iumsudp8c2</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>366527404345-08vp1rsuqgh42hvo1m5gv1m67arjgrbm.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBwa9HR9IFcbmUdy4YCpz_ZkSuqZ1jQA5U</string>
+	<key>GCM_SENDER_ID</key>
+	<string>366527404345</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.antigravity.chatapp.mobileApp</string>
+	<key>PROJECT_ID</key>
+	<string>click-live</string>
+	<key>STORAGE_BUCKET</key>
+	<string>click-live.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:366527404345:ios:a535b82145ff9b0fb0f0e8</string>
+</dict>
+</plist>
