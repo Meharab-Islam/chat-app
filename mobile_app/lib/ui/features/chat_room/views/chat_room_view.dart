@@ -11,6 +11,7 @@ import '../../../core/widgets/app_avatar.dart';
 import '../../auth/view_models/auth_view_model.dart';
 import '../../forward/views/forward_bottom_sheet.dart';
 import '../view_models/chat_room_view_model.dart';
+import '../widgets/chat_date_separator.dart';
 import '../widgets/chat_input_bar_widget.dart';
 import '../widgets/message_bubble_widget.dart';
 import '../widgets/selected_media_preview_widget.dart';
@@ -48,6 +49,9 @@ class _ChatRoomContent extends StatelessWidget {
 
   const _ChatRoomContent({required this.peerUser});
 
+  bool _isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -59,7 +63,16 @@ class _ChatRoomContent extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
         titleSpacing: 0,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1.h),
+          child: Container(
+            color: isDark ? Colors.white.withAlpha(15) : Colors.black.withAlpha(12),
+            height: 0.8,
+          ),
+        ),
         title: vm.isSearching
             ? TextField(
                 autofocus: true,
@@ -90,17 +103,32 @@ class _ChatRoomContent extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        Text(
-                          vm.isPeerTyping
-                              ? 'typing...'
-                              : (peerUser.isOnline ? 'Online' : 'Offline'),
-                          style: TextStyle(
-                            fontSize: 11.sp,
-                            color: vm.isPeerTyping
-                                ? Colors.green
-                                : (peerUser.isOnline ? AppColors.success : textSecondary),
-                            fontStyle: vm.isPeerTyping ? FontStyle.italic : FontStyle.normal,
-                          ),
+                        Row(
+                          children: [
+                            if (vm.isPeerTyping || peerUser.isOnline)
+                              Container(
+                                width: 7.r,
+                                height: 7.r,
+                                margin: EdgeInsets.only(right: 5.w),
+                                decoration: BoxDecoration(
+                                  color: vm.isPeerTyping ? Colors.green : AppColors.success,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            Text(
+                              vm.isPeerTyping
+                                  ? 'typing...'
+                                  : (peerUser.isOnline ? 'Online' : 'Offline'),
+                              style: TextStyle(
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w500,
+                                color: vm.isPeerTyping
+                                    ? Colors.green
+                                    : (peerUser.isOnline ? AppColors.success : textSecondary),
+                                fontStyle: vm.isPeerTyping ? FontStyle.italic : FontStyle.normal,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -115,31 +143,55 @@ class _ChatRoomContent extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              reverse: true,
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(vertical: 12.h),
-              itemCount: vm.messages.length,
-              itemBuilder: (context, index) {
-                final msg = vm.messages[index];
-                final isMe = msg.senderId == vm.currentUserId;
-
-                return MessageBubbleWidget(
-                  message: msg,
-                  isMe: isMe,
-                  onForward: () => ForwardBottomSheet.show(context, msg),
-                  onDownload: () => _handleDownload(context, vm, msg),
-                  onReply: () => vm.setReplyingTo(msg),
-                  onReact: (emoji) => vm.reactToMessage(msg.id, emoji),
-                  onUnsend: () => vm.unsendMessage(msg.id),
-                  onDeleteForMe: () => vm.deleteForMe(msg.id),
-                );
-              },
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          color: theme.scaffoldBackgroundColor,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDark
+                ? const [Color(0xFF0D0F15), Color(0xFF090A0E)]
+                : const [Color(0xFFF8FAFC), Color(0xFFF1F5F9)],
           ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                reverse: true,
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.symmetric(vertical: 10.h),
+                itemCount: vm.messages.length,
+                itemBuilder: (context, index) {
+                  final msg = vm.messages[index];
+                  final isMe = msg.senderId == vm.currentUserId;
+                  final showDate = index == vm.messages.length - 1 ||
+                      !_isSameDay(msg.timestamp, vm.messages[index + 1].timestamp);
+
+                  final bubble = MessageBubbleWidget(
+                    message: msg,
+                    isMe: isMe,
+                    onForward: () => ForwardBottomSheet.show(context, msg),
+                    onDownload: () => _handleDownload(context, vm, msg),
+                    onReply: () => vm.setReplyingTo(msg),
+                    onReact: (emoji) => vm.reactToMessage(msg.id, emoji),
+                    onUnsend: () => vm.unsendMessage(msg.id),
+                    onDeleteForMe: () => vm.deleteForMe(msg.id),
+                  );
+
+                  if (showDate) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ChatDateSeparator(date: msg.timestamp),
+                        bubble,
+                      ],
+                    );
+                  }
+                  return bubble;
+                },
+              ),
+            ),
           if (vm.replyingTo != null)
             Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),

@@ -8,6 +8,7 @@ import '../../../core/widgets/app_badge.dart';
 import 'audio_message_widget.dart';
 import 'file_message_widget.dart';
 import 'media_grid_message_widget.dart';
+import 'message_status_icon.dart';
 
 class MessageBubbleWidget extends StatelessWidget {
   final MessageModel message;
@@ -35,15 +36,16 @@ class MessageBubbleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final primary = theme.colorScheme.primary;
 
     final bubbleBg = isMe
-        ? theme.colorScheme.primary
+        ? primary
         : (isDark ? AppColors.darkBubbleReceiver : AppColors.lightBubbleReceiver);
     final textColor = isMe
         ? Colors.white
         : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary);
     final timeColor = isMe
-        ? Colors.white.withAlpha(200)
+        ? Colors.white.withAlpha(220)
         : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary);
 
     return Align(
@@ -51,17 +53,39 @@ class MessageBubbleWidget extends StatelessWidget {
       child: GestureDetector(
         onLongPress: () => _showMessageActionSheet(context),
         child: Container(
-          margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
-          constraints: BoxConstraints(maxWidth: 280.w),
+          margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 3.5.h),
+          constraints: BoxConstraints(maxWidth: 285.w),
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
           decoration: BoxDecoration(
-            color: message.isUnsent ? Colors.grey.withAlpha(50) : bubbleBg,
+            color: message.isUnsent ? Colors.grey.withAlpha(50) : (isMe ? null : bubbleBg),
+            gradient: isMe && !message.isUnsent
+                ? LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [primary, primary.withAlpha(225)],
+                  )
+                : null,
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(16.r),
-              topRight: Radius.circular(16.r),
-              bottomLeft: Radius.circular(isMe ? 16.r : 4.r),
-              bottomRight: Radius.circular(isMe ? 4.r : 16.r),
+              topLeft: Radius.circular(18.r),
+              topRight: Radius.circular(18.r),
+              bottomLeft: Radius.circular(isMe ? 18.r : 4.r),
+              bottomRight: Radius.circular(isMe ? 4.r : 18.r),
             ),
+            border: isMe
+                ? null
+                : Border.all(
+                    color: isDark ? Colors.white.withAlpha(15) : Colors.black.withAlpha(10),
+                    width: 0.8,
+                  ),
+            boxShadow: [
+              BoxShadow(
+                color: isMe
+                    ? primary.withAlpha(isDark ? 45 : 55)
+                    : Colors.black.withAlpha(isDark ? 25 : 8),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -72,7 +96,7 @@ class MessageBubbleWidget extends StatelessWidget {
                   padding: EdgeInsets.all(6.r),
                   margin: EdgeInsets.only(bottom: 6.h),
                   decoration: BoxDecoration(
-                    color: Colors.black12,
+                    color: Colors.black.withAlpha(25),
                     borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Text(
@@ -108,44 +132,38 @@ class MessageBubbleWidget extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
               ],
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    DateFormat('h:mm a').format(message.timestamp),
-                    style: TextStyle(fontSize: 10.sp, color: timeColor),
-                  ),
-                  if (isMe && !message.isUnsent) ...[
-                    SizedBox(width: 4.w),
-                    _buildStatusIcon(message.status),
+              Container(
+                margin: EdgeInsets.only(top: 2.h),
+                padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.5.h),
+                decoration: BoxDecoration(
+                  color: isMe
+                      ? Colors.black.withAlpha(35)
+                      : (isDark ? Colors.white.withAlpha(10) : Colors.black.withAlpha(8)),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      DateFormat('h:mm a').format(message.timestamp),
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w500,
+                        color: timeColor,
+                      ),
+                    ),
+                    if (isMe && !message.isUnsent) ...[
+                      SizedBox(width: 4.w),
+                      MessageStatusIcon(status: message.status, isMe: isMe),
+                    ],
                   ],
-                ],
+                ),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  Widget _buildStatusIcon(String status) {
-    if (status == 'sending') {
-      return SizedBox(
-        width: 12.r,
-        height: 12.r,
-        child: const CircularProgressIndicator(
-          strokeWidth: 1.5,
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
-        ),
-      );
-    } else if (status == 'read') {
-      return Icon(Icons.done_all, size: 14.sp, color: Colors.cyanAccent);
-    } else if (status == 'delivered') {
-      return Icon(Icons.done_all, size: 14.sp, color: Colors.white70);
-    } else if (status == 'failed') {
-      return Icon(Icons.error_outline, size: 14.sp, color: Colors.redAccent);
-    }
-    return Icon(Icons.done, size: 14.sp, color: Colors.white70);
   }
 
   void _showMessageActionSheet(BuildContext context) {
