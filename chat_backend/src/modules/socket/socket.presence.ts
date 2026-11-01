@@ -11,7 +11,7 @@ export class PresenceService {
    */
   static async setUserOnline(userId: string) {
     try {
-      await prisma.user.update({
+      await prisma.user.updateMany({
         where: { id: userId },
         data: { isOnline: true },
       });
@@ -26,7 +26,7 @@ export class PresenceService {
    */
   static async setUserOffline(userId: string) {
     try {
-      await prisma.user.update({
+      await prisma.user.updateMany({
         where: { id: userId },
         data: { isOnline: false, lastSeen: new Date() },
       });

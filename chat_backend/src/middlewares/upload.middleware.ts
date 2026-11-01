@@ -1,7 +1,7 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 import { ENV } from '../config/env.js';
 import { getFileCategory, sanitizeFileName } from '../utils/fileHelper.js';
 
@@ -27,11 +27,14 @@ const storage = multer.diskStorage({
       else subfolder = 'files';
     }
     const dest = path.join(process.cwd(), ENV.UPLOAD_DIR, subfolder);
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
+    }
     cb(null, dest);
   },
   filename: (_req, file, cb) => {
     const ext = path.extname(file.originalname);
-    const uniqueName = `${uuidv4()}${ext}`;
+    const uniqueName = `${crypto.randomUUID()}${ext}`;
     cb(null, uniqueName);
   },
 });
