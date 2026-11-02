@@ -169,3 +169,4 @@ export const EditGroupModal: React.FC<Props> = ({ isOpen, onClose }) => {
     </div>
   );
 };
+

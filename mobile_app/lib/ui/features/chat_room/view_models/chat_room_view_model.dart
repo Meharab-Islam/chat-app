@@ -5,6 +5,7 @@ import '../../../../data/models/message_model.dart';
 import '../../../../data/models/user_model.dart';
 import '../../../../data/repositories/chat_repository.dart';
 import '../../../../data/services/media_service.dart';
+import '../../../../data/services/video_thumbnail_cache.dart';
 import 'chat_room_actions_mixin.dart';
 
 class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
@@ -35,6 +36,10 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
     required this.chatRepository,
     required this.mediaService,
   }) {
+    final cached = chatRepository.getMessages(conversationId);
+    if (cached.isNotEmpty) {
+      _messages = List<MessageModel>.from(cached)..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    }
     chatRepository.activeConversationId = conversationId;
     chatRepository.socketService.joinChat(conversationId);
     _loadMessages();
@@ -188,6 +193,12 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
         conversationId: conversationId, senderId: currentUserId,
         text: caption.trim(), fileAttachments: files, replyToId: replyId,
       );
+      if (sMsg != null && files.isNotEmpty) {
+        if (sMsg.mediaUrl != null) VideoThumbnailCache.registerLocalPath(sMsg.mediaUrl!, files.first.path);
+        for (int i = 0; i < sMsg.attachmentUrls.length && i < files.length; i++) {
+          VideoThumbnailCache.registerLocalPath(sMsg.attachmentUrls[i], files[i].path);
+        }
+      }
       final idx = _messages.indexWhere((m) => m.id == tempId);
       if (idx != -1 && !_isDisposed) {
         _messages[idx] = sMsg ?? _messages[idx].copyWith(status: 'sent');
@@ -203,14 +214,10 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
   }
 
   Future<void> pickAndSendFiles() => pickAndSendOtherFiles(
-        replyToId: _replyingTo?.id,
-        onRefresh: () { if (!_isDisposed) { _replyingTo = null; _loadMessages(); } },
-      );
+        replyToId: _replyingTo?.id, onRefresh: () { if (!_isDisposed) { _replyingTo = null; _loadMessages(); } });
 
   Future<void> sendVoiceMessage(File audio) => sendVoice(
-        audio, replyToId: _replyingTo?.id,
-        onRefresh: () { if (!_isDisposed) { _replyingTo = null; _loadMessages(); } },
-      );
+        audio, replyToId: _replyingTo?.id, onRefresh: () { if (!_isDisposed) { _replyingTo = null; _loadMessages(); } });
 
   Future<void> unsendMessage(String id) => unsend(id, _loadMessages);
   Future<void> deleteForMe(String id) => deleteMessageForMe(id, _loadMessages);
@@ -235,9 +242,7 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
     for (final unsub in _socketUnsubscribers) { unsub(); }
     _socketUnsubscribers.clear();
     chatRepository.socketService.leaveChat(conversationId);
-    if (chatRepository.activeConversationId == conversationId) {
-      chatRepository.activeConversationId = null;
-    }
+    if (chatRepository.activeConversationId == conversationId) chatRepository.activeConversationId = null;
     super.dispose();
   }
 }

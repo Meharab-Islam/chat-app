@@ -1,7 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:video_player/video_player.dart';
+
+import '../../../../data/services/video_thumbnail_cache.dart';
 
 class VideoThumbnailWidget extends StatefulWidget {
   final String videoUrl;
@@ -25,9 +26,13 @@ class VideoThumbnailWidget extends StatefulWidget {
   State<VideoThumbnailWidget> createState() => _VideoThumbnailWidgetState();
 }
 
-class _VideoThumbnailWidgetState extends State<VideoThumbnailWidget> {
+class _VideoThumbnailWidgetState extends State<VideoThumbnailWidget>
+    with AutomaticKeepAliveClientMixin {
   VideoPlayerController? _controller;
   bool _isInitialized = false;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -35,33 +40,41 @@ class _VideoThumbnailWidgetState extends State<VideoThumbnailWidget> {
     _initThumbnail();
   }
 
-  Future<void> _initThumbnail() async {
-    try {
-      if (widget.videoUrl.startsWith('http://') ||
-          widget.videoUrl.startsWith('https://')) {
-        _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
-      } else {
-        _controller = VideoPlayerController.file(File(widget.videoUrl));
-      }
-      await _controller!.initialize();
-      await _controller!.seekTo(const Duration(milliseconds: 100));
-      if (mounted) {
-        setState(() => _isInitialized = true);
-        if (_controller!.value.aspectRatio > 0) {
-          widget.onAspectRatioResolved?.call(_controller!.value.aspectRatio);
-        }
-      }
-    } catch (_) {}
+  @override
+  void didUpdateWidget(VideoThumbnailWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.videoUrl != widget.videoUrl) {
+      _initThumbnail();
+    }
   }
 
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
+  Future<void> _initThumbnail() async {
+    final cached = VideoThumbnailCache.getInitialized(widget.videoUrl);
+    if (cached != null) {
+      _controller = cached;
+      _isInitialized = true;
+      if (cached.value.aspectRatio > 0) {
+        widget.onAspectRatioResolved?.call(cached.value.aspectRatio);
+      }
+      return;
+    }
+
+    final ctrl = await VideoThumbnailCache.getOrInit(
+      widget.videoUrl,
+      onRatio: widget.onAspectRatioResolved,
+    );
+
+    if (mounted && ctrl != null && ctrl.value.isInitialized) {
+      setState(() {
+        _controller = ctrl;
+        _isInitialized = true;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final radius = widget.borderRadius ?? BorderRadius.circular(8.r);
 
     return ClipRRect(
@@ -72,7 +85,7 @@ class _VideoThumbnailWidgetState extends State<VideoThumbnailWidget> {
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
-            color: Colors.grey.shade900,
+            color: const Color(0xFF16181D),
             borderRadius: radius,
           ),
           child: Stack(
@@ -95,11 +108,11 @@ class _VideoThumbnailWidgetState extends State<VideoThumbnailWidget> {
                 )
               else
                 Container(
-                  color: const Color(0xFF1E1E1E),
+                  color: const Color(0xFF1E2028),
                   child: Center(
                     child: Icon(
                       Icons.videocam_rounded,
-                      color: Colors.white38,
+                      color: Colors.white24,
                       size: 28.r,
                     ),
                   ),
@@ -125,4 +138,3 @@ class _VideoThumbnailWidgetState extends State<VideoThumbnailWidget> {
     );
   }
 }
-

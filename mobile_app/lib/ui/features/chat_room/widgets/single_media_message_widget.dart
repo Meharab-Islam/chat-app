@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../data/models/message_model.dart';
+import '../../../../data/services/video_thumbnail_cache.dart';
 import '../../../core/widgets/app_cached_image.dart';
 import '../../media_viewer/views/image_viewer_view.dart';
 import '../../media_viewer/views/video_player_view.dart';
@@ -37,9 +38,11 @@ class _SingleMediaMessageWidgetState extends State<SingleMediaMessageWidget> {
   @override
   void initState() {
     super.initState();
-    _aspectRatio = _aspectRatioCache[widget.url];
-    if (_aspectRatio == null && !widget.isVideo) {
-      _resolveImageRatio();
+    if (widget.isVideo) {
+      _aspectRatio = VideoThumbnailCache.getCachedRatio(widget.url);
+    } else {
+      _aspectRatio = _aspectRatioCache[widget.url];
+      if (_aspectRatio == null) _resolveImageRatio();
     }
   }
 
@@ -72,9 +75,11 @@ class _SingleMediaMessageWidgetState extends State<SingleMediaMessageWidget> {
       if (_imageStream != null && _imageListener != null) {
         _imageStream?.removeListener(_imageListener!);
       }
-      _aspectRatio = _aspectRatioCache[widget.url];
-      if (_aspectRatio == null && !widget.isVideo) {
-        _resolveImageRatio();
+      if (widget.isVideo) {
+        _aspectRatio = VideoThumbnailCache.getCachedRatio(widget.url);
+      } else {
+        _aspectRatio = _aspectRatioCache[widget.url];
+        if (_aspectRatio == null) _resolveImageRatio();
       }
     }
   }

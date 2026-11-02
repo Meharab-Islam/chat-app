@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useChat } from '../context/ChatContext';
 import { resolveMediaUrl } from '../services/api';
 import { VoiceWavePlayer } from './VoiceWavePlayer';
+import { MediaGrid } from './MediaGrid';
 import { Check, CheckCheck, Reply, Ban, Trash2, Smile, FileText, Download, Smartphone, FileArchive, MoreVertical } from 'lucide-react';
 
 interface Props {
@@ -20,6 +21,13 @@ export const MessageItem: React.FC<Props> = ({ message, onReply }) => {
 
   const isMe = message.senderId === user?.id;
   const reactions = message.reactions || [];
+
+  const mediaAttachments = (message.attachments || []).filter(
+    (a: any) => a.fileType === 'image' || a.fileType === 'video'
+  );
+  const otherAttachments = (message.attachments || []).filter(
+    (a: any) => a.fileType !== 'image' && a.fileType !== 'video'
+  );
 
   useEffect(() => {
     if (!showMenu && !showReactions) return;
@@ -38,22 +46,6 @@ export const MessageItem: React.FC<Props> = ({ message, onReply }) => {
     const type = att.fileType;
     const name = att.fileName || 'File';
     const sizeStr = `${(att.fileSize / (1024 * 1024)).toFixed(1)} MB`;
-
-    if (type === 'image') {
-      return (
-        <a key={att.id || url} href={url} target="_blank" rel="noreferrer" className="block rounded-xl overflow-hidden mt-1 max-w-sm">
-          <img src={url} alt={name} className="w-full max-h-60 object-cover hover:scale-105 transition duration-300" />
-        </a>
-      );
-    }
-
-    if (type === 'video') {
-      return (
-        <div key={att.id || url} className="mt-1 max-w-sm rounded-xl overflow-hidden">
-          <video src={url} controls className="w-full max-h-60 rounded-xl bg-black" />
-        </div>
-      );
-    }
 
     if (type === 'audio') {
       return <VoiceWavePlayer key={att.id || url} audioUrl={url} isMe={isMe} />;
@@ -112,9 +104,14 @@ export const MessageItem: React.FC<Props> = ({ message, onReply }) => {
           </div>
         )}
 
-        {/* Attachments */}
-        {!message.isUnsent && message.attachments && message.attachments.length > 0 && (
-          <div className="space-y-1">{message.attachments.map(renderAttachment)}</div>
+        {/* Media Grid (Images & Videos) */}
+        {!message.isUnsent && mediaAttachments.length > 0 && (
+          <MediaGrid items={mediaAttachments} />
+        )}
+
+        {/* Other Attachments (Audio, Files, ZIP, APK) */}
+        {!message.isUnsent && otherAttachments.length > 0 && (
+          <div className="space-y-1 mt-1">{otherAttachments.map(renderAttachment)}</div>
         )}
 
         {/* Message Content or Unsent Notice */}
