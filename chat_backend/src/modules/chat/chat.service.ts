@@ -13,7 +13,13 @@ export class ChatService {
       cacheKey,
       async () => {
         const chats = await prisma.chat.findMany({
-          where: { members: { some: { userId } } },
+          where: {
+            members: { some: { userId } },
+            OR: [
+              { type: 'group' },
+              { messages: { some: { deletedFor: { none: { userId } } } } },
+            ],
+          },
           include: {
             members: {
               include: {
@@ -41,7 +47,9 @@ export class ChatService {
           orderBy: { updatedAt: 'desc' },
         });
 
-        return chats.map((chat) => {
+        return chats
+          .filter((chat) => chat.type === 'group' || chat.messages.length > 0)
+          .map((chat) => {
           const myMembership = chat.members.find((m) => m.userId === userId);
           const otherMembers = chat.members.filter((m) => m.userId !== userId);
           const lastMsg = chat.messages[0] || null;
@@ -50,26 +58,21 @@ export class ChatService {
             id: chat.id,
             type: chat.type,
             name: chat.type === 'direct' ? otherMembers[0]?.user.name : chat.name,
-            avatarUrl:
-              chat.type === 'direct'
-                ? otherMembers[0]?.user.avatarUrl
-                : chat.avatarUrl,
+            avatarUrl: chat.type === 'direct' ? otherMembers[0]?.user.avatarUrl : chat.avatarUrl,
             otherUser: chat.type === 'direct' ? otherMembers[0]?.user : null,
             members: chat.members,
             lastReadMessageId: myMembership?.lastReadMessageId || null,
             lastReadAt: myMembership?.lastReadAt || null,
-            lastMessage: lastMsg
-              ? {
-                  id: lastMsg.id,
-                  text: lastMsg.isUnsent ? 'This message was unsent' : lastMsg.text,
-                  type: lastMsg.type,
-                  status: lastMsg.status,
-                  sender: lastMsg.sender,
-                  createdAt: lastMsg.createdAt,
-                  isUnsent: lastMsg.isUnsent,
-                  hasAttachments: lastMsg.attachments.length > 0,
-                }
-              : null,
+            lastMessage: lastMsg ? {
+              id: lastMsg.id,
+              text: lastMsg.isUnsent ? 'This message was unsent' : lastMsg.text,
+              type: lastMsg.type,
+              status: lastMsg.status,
+              sender: lastMsg.sender,
+              createdAt: lastMsg.createdAt,
+              isUnsent: lastMsg.isUnsent,
+              hasAttachments: lastMsg.attachments.length > 0,
+            } : null,
             updatedAt: chat.updatedAt,
           };
         });

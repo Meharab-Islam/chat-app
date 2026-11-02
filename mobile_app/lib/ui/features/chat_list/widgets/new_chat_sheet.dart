@@ -54,7 +54,7 @@ class _NewChatSheetState extends State<NewChatSheet> {
   Future<void> _performSearch(String query) async {
     setState(() => _isLoading = true);
     final repo = context.read<ChatRepository>();
-    final results = await repo.searchUsers(query.trim().isEmpty ? 'a' : query.trim());
+    final results = await repo.searchUsers(query.trim());
     if (mounted) {
       setState(() {
         _users = results;

@@ -59,6 +59,9 @@ class ChatRepository {
         _store.addMessageToStore(msg.conversationId, msg);
         _store.checkAutoSave(msg);
         _notifyIncomingMessage(msg);
+        if (!_store.conversations.any((c) => c.id == msg.conversationId)) {
+          loadConversations();
+        }
       }
     });
 
@@ -131,6 +134,9 @@ class ChatRepository {
       );
       if (message != null) {
         _store.addMessageToStore(conversationId, message);
+        if (!_store.conversations.any((c) => c.id == conversationId)) {
+          loadConversations();
+        }
         return message;
       }
     } catch (e) {
@@ -161,11 +167,8 @@ class ChatRepository {
 
   Future<List<UserModel>> searchUsers(String query) => _api.searchUsers(query);
 
-  Future<ChatConversationModel?> createDirectChat(String recipientId) async {
-    final chat = await _api.createDirectChat(recipientId);
-    if (chat != null) await loadConversations();
-    return chat;
-  }
+  Future<ChatConversationModel?> createDirectChat(String recipientId) =>
+      _api.createDirectChat(recipientId);
 
   Future<ChatConversationModel?> createGroupChat(String name, List<String> memberIds) async {
     final chat = await _api.createGroupChat(name, memberIds);
@@ -213,13 +216,8 @@ class ChatRepository {
     }
   }
 
-  Future<void> reactToMessage(String messageId, String emoji) async {
-    try {
-      await _api.reactToMessage(messageId, emoji);
-    } catch (e) {
-      debugPrint('Error reacting: $e');
-    }
-  }
+  Future<void> reactToMessage(String messageId, String emoji) =>
+      _api.reactToMessage(messageId, emoji).catchError((e) => debugPrint('Error reacting: $e'));
 
   void markAsRead(String conversationId, [String? lastReadMessageId]) {
     final list = _store.messagesByConv[conversationId];

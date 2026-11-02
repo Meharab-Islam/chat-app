@@ -117,7 +117,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const createDirectChat = async (recipientId: string) => {
     const chat = await api.createDirectChat(recipientId);
-    await refreshChats();
     selectChat(chat);
     return chat;
   };
