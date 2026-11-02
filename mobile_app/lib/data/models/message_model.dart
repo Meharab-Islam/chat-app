@@ -39,6 +39,7 @@ class MessageModel {
   final bool isForwarded;
   final bool isUnsent;
   final String? originalSenderName;
+  final String? senderName;
   final String? localFilePath;
   final int? durationSeconds;
   final String? replyToId;
@@ -60,6 +61,7 @@ class MessageModel {
     this.isForwarded = false,
     this.isUnsent = false,
     this.originalSenderName,
+    this.senderName,
     this.localFilePath,
     this.durationSeconds,
     this.replyToId,
@@ -82,6 +84,7 @@ class MessageModel {
     bool? isForwarded,
     bool? isUnsent,
     String? originalSenderName,
+    String? senderName,
     String? localFilePath,
     int? durationSeconds,
     String? replyToId,
@@ -103,6 +106,7 @@ class MessageModel {
       isForwarded: isForwarded ?? this.isForwarded,
       isUnsent: isUnsent ?? this.isUnsent,
       originalSenderName: originalSenderName ?? this.originalSenderName,
+      senderName: senderName ?? this.senderName,
       localFilePath: localFilePath ?? this.localFilePath,
       durationSeconds: durationSeconds ?? this.durationSeconds,
       replyToId: replyToId ?? this.replyToId,
@@ -200,6 +204,7 @@ class MessageModel {
       isForwarded: json['isForwarded'] as bool? ?? false,
       isUnsent: json['isUnsent'] as bool? ?? false,
       originalSenderName: json['originalSenderName'] as String?,
+      senderName: json['sender']?['name'] as String? ?? json['senderName'] as String?,
       replyToId: json['replyToId'] as String?,
       replyToText: json['replyTo']?['text'] as String?,
       reactions: reactionsMap,

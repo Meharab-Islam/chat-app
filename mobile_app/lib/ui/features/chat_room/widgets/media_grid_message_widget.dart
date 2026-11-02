@@ -5,6 +5,7 @@ import '../../../core/design_system/app_spacing.dart';
 import '../../../core/widgets/app_cached_image.dart';
 import '../../media_viewer/views/image_viewer_view.dart';
 import '../../media_viewer/views/video_player_view.dart';
+import 'single_media_message_widget.dart';
 import 'video_thumbnail_widget.dart';
 
 class MediaGridMessageWidget extends StatelessWidget {
@@ -62,13 +63,13 @@ class MediaGridMessageWidget extends StatelessWidget {
     final total = urls.length;
 
     if (total == 1) {
-      return RepaintBoundary(
-        child: Stack(
-          children: [
-            _buildTile(context, urls.first, 240.w, 180.h, radius: AppSpacing.radiusMd),
-            Positioned(top: 8.h, right: 8.w, child: _buildDownloadBtn()),
-          ],
-        ),
+      final url = urls.first;
+      final isVid = _isVideo(url) || message.mediaType.isVideo;
+      return SingleMediaMessageWidget(
+        message: message,
+        url: url,
+        isVideo: isVid,
+        onDownload: onDownload,
       );
     } else if (total == 2) {
       return RepaintBoundary(
@@ -157,17 +158,6 @@ class MediaGridMessageWidget extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildDownloadBtn() {
-    return GestureDetector(
-      onTap: onDownload,
-      child: Container(
-        padding: EdgeInsets.all(6.r),
-        decoration: BoxDecoration(color: Colors.black.withAlpha(140), shape: BoxShape.circle),
-        child: Icon(Icons.arrow_downward_rounded, color: Colors.white, size: 16.r),
       ),
     );
   }

@@ -95,6 +95,23 @@ class ChatApiService {
     return null;
   }
 
+  Future<ChatConversationModel?> updateGroup(String chatId, {String? name, File? avatarFile}) async {
+    final fields = <String, String>{};
+    if (name != null && name.trim().isNotEmpty) fields['name'] = name.trim();
+    final files = avatarFile != null ? [avatarFile] : <File>[];
+
+    final data = await apiClient.postMultipart(
+      endpoint: '/chats/$chatId/update',
+      fields: fields,
+      files: files,
+      fileFieldName: 'avatar',
+    );
+    if (data is Map<String, dynamic>) {
+      return ChatConversationModel.fromJson(data);
+    }
+    return null;
+  }
+
   Future<List<MessageModel>> searchMessagesInChat(String chatId, String query) async {
     final data = await apiClient.get('/messages/$chatId/search?q=${Uri.encodeComponent(query)}');
     if (data is List) {

@@ -59,30 +59,18 @@ class ChatRepository {
         _store.addMessageToStore(msg.conversationId, msg);
         _store.checkAutoSave(msg);
         _notifyIncomingMessage(msg);
-        if (!_store.conversations.any((c) => c.id == msg.conversationId)) {
-          loadConversations();
-        }
+        if (!_store.conversations.any((c) => c.id == msg.conversationId)) loadConversations();
       }
     });
-
     socketService.onMessageDelivered((data) {
-      if (data is Map<String, dynamic>) {
-        _store.updateMessageStatus(data['chatId'], data['messageId'], 'delivered');
-      }
+      if (data is Map<String, dynamic>) _store.updateMessageStatus(data['chatId'], data['messageId'], 'delivered');
     });
-
     socketService.onMessageRead((data) {
-      if (data is Map<String, dynamic>) {
-        _store.markMessagesRead(data['chatId'], data['lastReadMessageId']);
-      }
+      if (data is Map<String, dynamic>) _store.markMessagesRead(data['chatId'], data['lastReadMessageId']);
     });
-
     socketService.onMessageUnsent((data) {
-      if (data is Map<String, dynamic>) {
-        _store.markMessageUnsent(data['chatId'], data['messageId']);
-      }
+      if (data is Map<String, dynamic>) _store.markMessageUnsent(data['chatId'], data['messageId']);
     });
-
     socketService.onUserOnline((data) => _store.setPeerOnlineStatus(data['userId'], true));
     socketService.onUserOffline((data) => _store.setPeerOnlineStatus(data['userId'], false));
   }
@@ -93,6 +81,7 @@ class ChatRepository {
       _store.conversations.clear();
       _store.conversations.addAll(list);
       _store.streamController.add(_store.conversations);
+      _store.saveConversationsToDisk();
     } catch (e) {
       debugPrint('Failed to load chats: $e');
     }
@@ -103,6 +92,7 @@ class ChatRepository {
       final list = await _api.fetchMessages(conversationId);
       list.sort((a, b) => b.timestamp.compareTo(a.timestamp));
       _store.messagesByConv[conversationId] = list;
+      _store.saveMessagesToDisk(conversationId);
       return list;
     } catch (e) {
       debugPrint('Failed to fetch messages for $conversationId: $e');
@@ -111,7 +101,7 @@ class ChatRepository {
   }
 
   List<MessageModel> getMessages(String conversationId) =>
-      List.unmodifiable(_store.messagesByConv[conversationId] ?? []);
+      List.unmodifiable(_store.getCachedMessagesFor(conversationId));
 
   Future<MessageModel?> sendMessage({
     required String conversationId,
@@ -176,6 +166,12 @@ class ChatRepository {
     return chat;
   }
 
+  Future<ChatConversationModel?> updateGroup(String chatId, {String? name, File? avatarFile}) async {
+    final chat = await _api.updateGroup(chatId, name: name, avatarFile: avatarFile);
+    if (chat != null) await loadConversations();
+    return chat;
+  }
+
   Future<List<MessageModel>> searchMessagesInChat(String chatId, String query) =>
       _api.searchMessagesInChat(chatId, query);
 
@@ -192,9 +188,7 @@ class ChatRepository {
     try {
       await _api.forwardMessage(id, targetConversationIds, text);
       await loadConversations();
-    } catch (e) {
-      debugPrint('Error forwarding message: $e');
-    }
+    } catch (e) { debugPrint('Error forward: $e'); }
   }
 
   Future<void> unsendMessage(String messageId, String conversationId) async {
@@ -231,9 +225,7 @@ class ChatRepository {
   void _notifyIncomingMessage(MessageModel msg) {
     if (msg.senderId == currentUserId || activeConversationId == msg.conversationId) return;
     final title = _store.getConversationTitle(msg.conversationId) ?? 'New Message';
-    final body = msg.text.isNotEmpty
-        ? msg.text
-        : (msg.mediaType == MessageMediaType.image ? 'Sent a photo' : 'Sent an attachment');
+    final body = msg.text.isNotEmpty ? msg.text : (msg.mediaType == MessageMediaType.image ? 'Sent a photo' : 'Sent an attachment');
     final imageUrl = msg.mediaType == MessageMediaType.image ? msg.mediaUrl : null;
     NotificationService.instance.showChatNotification(
       id: msg.conversationId.hashCode.abs(),

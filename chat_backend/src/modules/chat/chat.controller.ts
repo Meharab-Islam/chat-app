@@ -59,6 +59,27 @@ export class ChatController {
   }
 
   /**
+   * Update group name or avatar - Any member can update
+   */
+  static async updateGroup(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const userId = req.user!.userId;
+      const id = req.params.id as string;
+      const name = req.body?.name as string | undefined;
+      let avatarUrl = req.body?.avatarUrl as string | undefined;
+
+      if (req.file) {
+        avatarUrl = `/uploads/avatars/${req.file.filename}`;
+      }
+
+      const updated = await ChatService.updateGroup(userId, id, { name, avatarUrl });
+      sendSuccess(res, updated, 'Group updated successfully');
+    } catch (error: any) {
+      sendError(res, error.message || 'Failed to update group', 400);
+    }
+  }
+
+  /**
    * Delete or leave chat
    */
   static async deleteChat(req: AuthenticatedRequest, res: Response): Promise<void> {

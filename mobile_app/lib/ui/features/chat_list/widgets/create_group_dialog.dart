@@ -84,6 +84,8 @@ class _CreateGroupDialogState extends State<CreateGroupDialog> {
             builder: (_) => ChatRoomView(
               conversationId: groupChat.id,
               peerUser: groupChat.peerUser,
+              isGroup: true,
+              memberCount: groupChat.memberCount > 0 ? groupChat.memberCount : _selectedUserIds.length + 1,
             ),
           ),
         );

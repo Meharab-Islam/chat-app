@@ -24,6 +24,7 @@ interface ChatContextType {
   createDirectChat: (recipientId: string) => Promise<Chat>;
   createGroupChat: (name: string, memberIds: string[]) => Promise<Chat>;
   deleteChat: (chatId: string) => Promise<void>;
+  updateGroup: (chatId: string, name?: string, avatarFile?: File) => Promise<void>;
   markAsRead: (chatId: string) => Promise<void>;
   markAllAsRead: () => Promise<void>;
   unsendMessage: (messageId: string) => Promise<void>;
@@ -137,6 +138,14 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateGroup = async (chatId: string, name?: string, avatarFile?: File) => {
+    const updated = await api.updateGroup(chatId, name, avatarFile);
+    setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, ...updated } : c)));
+    if (activeChat?.id === chatId) {
+      setActiveChat((prev) => (prev ? { ...prev, ...updated } : updated));
+    }
+  };
+
   const markAsRead = async (chatId: string) => {
     await api.markAsRead(chatId);
     setChats((prev) => prev.map((c) => (c.id === chatId ? { ...c, unreadCount: 0 } : c)));
@@ -189,6 +198,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         createDirectChat,
         createGroupChat,
         deleteChat,
+        updateGroup,
         markAsRead,
         markAllAsRead,
         unsendMessage,

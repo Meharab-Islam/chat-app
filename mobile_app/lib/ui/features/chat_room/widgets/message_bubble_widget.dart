@@ -48,6 +48,12 @@ class MessageBubbleWidget extends StatelessWidget {
         ? Colors.white.withAlpha(220)
         : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary);
 
+    final hasMedia = (message.mediaType.isImage || message.mediaType.isVideo) && !message.isUnsent;
+    final isMediaOnly = hasMedia &&
+        message.text.isEmpty &&
+        message.replyToText == null &&
+        !message.isForwarded;
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: GestureDetector(
@@ -55,7 +61,9 @@ class MessageBubbleWidget extends StatelessWidget {
         child: Container(
           margin: EdgeInsets.symmetric(horizontal: 14.w, vertical: 3.5.h),
           constraints: BoxConstraints(maxWidth: 285.w),
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          padding: isMediaOnly
+              ? EdgeInsets.all(5.r)
+              : EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
           decoration: BoxDecoration(
             color: message.isUnsent ? Colors.grey.withAlpha(50) : (isMe ? null : bubbleBg),
             gradient: message.isUnsent
@@ -99,6 +107,18 @@ class MessageBubbleWidget extends StatelessWidget {
             crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
+              if (!isMe && message.senderName != null && message.senderName!.isNotEmpty && !message.isUnsent)
+                Padding(
+                  padding: EdgeInsets.only(bottom: 3.h),
+                  child: Text(
+                    message.senderName!,
+                    style: TextStyle(
+                      fontSize: 11.5.sp,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0284C7),
+                    ),
+                  ),
+                ),
               if (message.replyToText != null) ...[
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 5.h),
@@ -207,28 +227,12 @@ class MessageBubbleWidget extends StatelessWidget {
             ),
             const Divider(),
             if (onReply != null)
-              ListTile(
-                leading: const Icon(Icons.reply),
-                title: const Text('Reply'),
-                onTap: () { Navigator.pop(ctx); onReply?.call(); },
-              ),
-            ListTile(
-              leading: const Icon(Icons.forward_rounded),
-              title: const Text('Forward'),
-              onTap: () { Navigator.pop(ctx); onForward(); },
-            ),
+              ListTile(leading: const Icon(Icons.reply), title: const Text('Reply'), onTap: () { Navigator.pop(ctx); onReply?.call(); }),
+            ListTile(leading: const Icon(Icons.forward_rounded), title: const Text('Forward'), onTap: () { Navigator.pop(ctx); onForward(); }),
             if (isMe && !message.isUnsent && onUnsend != null)
-              ListTile(
-                leading: const Icon(Icons.undo, color: Colors.red),
-                title: const Text('Unsend', style: TextStyle(color: Colors.red)),
-                onTap: () { Navigator.pop(ctx); onUnsend?.call(); },
-              ),
+              ListTile(leading: const Icon(Icons.undo, color: Colors.red), title: const Text('Unsend', style: TextStyle(color: Colors.red)), onTap: () { Navigator.pop(ctx); onUnsend?.call(); }),
             if (onDeleteForMe != null)
-              ListTile(
-                leading: const Icon(Icons.delete_outline),
-                title: const Text('Delete for me'),
-                onTap: () { Navigator.pop(ctx); onDeleteForMe?.call(); },
-              ),
+              ListTile(leading: const Icon(Icons.delete_outline), title: const Text('Delete for me'), onTap: () { Navigator.pop(ctx); onDeleteForMe?.call(); }),
           ],
         ),
       ),

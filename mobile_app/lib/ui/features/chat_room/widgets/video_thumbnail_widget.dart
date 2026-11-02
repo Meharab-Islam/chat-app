@@ -9,6 +9,7 @@ class VideoThumbnailWidget extends StatefulWidget {
   final double height;
   final BorderRadius? borderRadius;
   final VoidCallback? onTap;
+  final ValueChanged<double>? onAspectRatioResolved;
 
   const VideoThumbnailWidget({
     super.key,
@@ -17,6 +18,7 @@ class VideoThumbnailWidget extends StatefulWidget {
     required this.height,
     this.borderRadius,
     this.onTap,
+    this.onAspectRatioResolved,
   });
 
   @override
@@ -45,6 +47,9 @@ class _VideoThumbnailWidgetState extends State<VideoThumbnailWidget> {
       await _controller!.seekTo(const Duration(milliseconds: 100));
       if (mounted) {
         setState(() => _isInitialized = true);
+        if (_controller!.value.aspectRatio > 0) {
+          widget.onAspectRatioResolved?.call(_controller!.value.aspectRatio);
+        }
       }
     } catch (_) {}
   }

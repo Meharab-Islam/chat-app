@@ -1,6 +1,8 @@
 import { prisma } from '../../config/database.js';
 import { CacheService } from '../../services/cache.service.js';
 import { REDIS_KEYS, CACHE_TTL } from '../../config/constants.js';
+import { emitToChat } from '../socket/socket.server.js';
+import { SOCKET_EVENTS } from '../socket/socket.events.js';
 
 export class ChatService {
   /**
@@ -170,76 +172,75 @@ export class ChatService {
   }
 
   /**
-   * Get chat details (served from Redis Cache)
+   * Update group chat name and/or avatar - Any member can update
    */
-  static async getChatDetails(chatId: string) {
-    const cacheKey = REDIS_KEYS.CHAT_DETAILS(chatId);
+  static async updateGroup(userId: string, chatId: string, data: { name?: string; avatarUrl?: string }) {
+    const member = await prisma.chatMember.findFirst({ where: { chatId, userId } });
+    if (!member) throw new Error('Not a member of this group');
 
-    return CacheService.getOrSet(
-      cacheKey,
-      async () => {
-        const chat = await prisma.chat.findUnique({
-          where: { id: chatId },
+    const updateData: any = { updatedAt: new Date() };
+    if (data.name?.trim()) updateData.name = data.name.trim();
+    if (data.avatarUrl) updateData.avatarUrl = data.avatarUrl;
+
+    const chat = await prisma.chat.update({
+      where: { id: chatId },
+      data: updateData,
+      include: {
+        members: {
           include: {
-            members: {
-              include: {
-                user: {
-                  select: {
-                    id: true,
-                    name: true,
-                    avatarUrl: true,
-                    status: true,
-                    isOnline: true,
-                    lastSeen: true,
-                  },
-                },
-              },
-            },
+            user: { select: { id: true, name: true, avatarUrl: true, isOnline: true } },
           },
-        });
-        if (!chat) throw new Error('Chat not found');
-        return chat;
+        },
       },
-      CACHE_TTL.CHAT_DETAILS
-    );
+    });
+
+    const members = await prisma.chatMember.findMany({ where: { chatId } });
+    await Promise.all([
+      ...members.map((m) => CacheService.del(REDIS_KEYS.USER_CHATS(m.userId))),
+      CacheService.del(REDIS_KEYS.CHAT_DETAILS(chatId)),
+    ]);
+
+    emitToChat(chatId, SOCKET_EVENTS.CHAT_UPDATED, chat);
+    return chat;
   }
 
-  /**
-   * Delete or leave chat for user
-   */
+  static async getChatDetails(chatId: string) {
+    return CacheService.getOrSet(REDIS_KEYS.CHAT_DETAILS(chatId), async () => {
+      const chat = await prisma.chat.findUnique({
+        where: { id: chatId },
+        include: {
+          members: {
+            include: {
+              user: { select: { id: true, name: true, avatarUrl: true, status: true, isOnline: true, lastSeen: true } },
+            },
+          },
+        },
+      });
+      if (!chat) throw new Error('Chat not found');
+      return chat;
+    }, CACHE_TTL.CHAT_DETAILS);
+  }
+
   static async deleteChat(userId: string, chatId: string) {
-    const member = await prisma.chatMember.findFirst({
-      where: { chatId, userId },
-    });
+    const member = await prisma.chatMember.findFirst({ where: { chatId, userId } });
     if (!member) throw new Error('Not a member of this chat');
 
-    await prisma.chatMember.deleteMany({
-      where: { chatId, userId },
-    });
-
-    const messages = await prisma.message.findMany({
-      where: { chatId },
-      select: { id: true },
-    });
-
-    if (messages.length > 0) {
+    await prisma.chatMember.deleteMany({ where: { chatId, userId } });
+    const msgs = await prisma.message.findMany({ where: { chatId }, select: { id: true } });
+    if (msgs.length > 0) {
       await prisma.deletedMessage.createMany({
-        data: messages.map((m) => ({ messageId: m.id, userId })),
+        data: msgs.map((m) => ({ messageId: m.id, userId })),
         skipDuplicates: true,
       });
     }
-
-    const remaining = await prisma.chatMember.count({ where: { chatId } });
-    if (remaining === 0) {
-      await prisma.chat.delete({ where: { id: chatId } });
-    }
+    const rem = await prisma.chatMember.count({ where: { chatId } });
+    if (rem === 0) await prisma.chat.delete({ where: { id: chatId } });
 
     await Promise.all([
       CacheService.del(REDIS_KEYS.USER_CHATS(userId)),
       CacheService.del(REDIS_KEYS.CHAT_DETAILS(chatId)),
       CacheService.delPattern(`chat:messages:${chatId}:*`),
     ]);
-
     return { chatId, deleted: true };
   }
 }

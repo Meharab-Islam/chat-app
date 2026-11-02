@@ -10,6 +10,8 @@ class ChatConversationModel {
   final int unreadCount;
   final String? lastReadMessageId;
   final DateTime updatedAt;
+  final int memberCount;
+  final List<UserModel>? members;
 
   const ChatConversationModel({
     required this.id,
@@ -19,6 +21,8 @@ class ChatConversationModel {
     this.unreadCount = 0,
     this.lastReadMessageId,
     required this.updatedAt,
+    this.memberCount = 0,
+    this.members,
   });
 
   bool get isGroup => type == 'group';
@@ -31,6 +35,8 @@ class ChatConversationModel {
     int? unreadCount,
     String? lastReadMessageId,
     DateTime? updatedAt,
+    int? memberCount,
+    List<UserModel>? members,
   }) {
     return ChatConversationModel(
       id: id ?? this.id,
@@ -40,6 +46,8 @@ class ChatConversationModel {
       unreadCount: unreadCount ?? this.unreadCount,
       lastReadMessageId: lastReadMessageId ?? this.lastReadMessageId,
       updatedAt: updatedAt ?? this.updatedAt,
+      memberCount: memberCount ?? this.memberCount,
+      members: members ?? this.members,
     );
   }
 
@@ -90,6 +98,22 @@ class ChatConversationModel {
       );
     }
 
+    final membersList = <UserModel>[];
+    if (json['members'] is List) {
+      for (final m in json['members'] as List) {
+        if (m is Map<String, dynamic> && m['user'] != null) {
+          final u = m['user'] as Map<String, dynamic>;
+          membersList.add(UserModel(
+            id: u['id'] as String? ?? '',
+            name: u['name'] as String? ?? 'User',
+            email: u['email'] as String? ?? '',
+            avatarUrl: ApiClient.resolveUrl(u['avatarUrl'] as String?),
+            isOnline: u['isOnline'] as bool? ?? false,
+          ));
+        }
+      }
+    }
+
     return ChatConversationModel(
       id: json['id'] as String,
       type: json['type'] as String? ?? 'direct',
@@ -98,6 +122,8 @@ class ChatConversationModel {
       unreadCount: json['unreadCount'] as int? ?? 0,
       lastReadMessageId: json['lastReadMessageId'] as String?,
       updatedAt: DateTime.tryParse(json['updatedAt'] as String? ?? '') ?? DateTime.now(),
+      memberCount: (json['members'] as List?)?.length ?? 0,
+      members: membersList,
     );
   }
 }

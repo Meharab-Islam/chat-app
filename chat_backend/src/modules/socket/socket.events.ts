@@ -6,6 +6,7 @@ export const SOCKET_EVENTS = {
   // Chat Rooms
   JOIN_CHAT: 'chat:join',
   LEAVE_CHAT: 'chat:leave',
+  CHAT_UPDATED: 'chat:updated',
 
   // Messages Status & Delivery
   MESSAGE_NEW: 'message:new',

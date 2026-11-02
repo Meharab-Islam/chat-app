@@ -13,17 +13,22 @@ import '../../forward/views/forward_bottom_sheet.dart';
 import '../view_models/chat_room_view_model.dart';
 import '../widgets/chat_date_separator.dart';
 import '../widgets/chat_input_bar_widget.dart';
+import '../widgets/group_info_bottom_sheet.dart';
 import '../widgets/message_bubble_widget.dart';
 import '../widgets/selected_media_preview_widget.dart';
 
 class ChatRoomView extends StatelessWidget {
   final String conversationId;
   final UserModel peerUser;
+  final bool isGroup;
+  final int memberCount;
 
   const ChatRoomView({
     super.key,
     required this.conversationId,
     required this.peerUser,
+    this.isGroup = false,
+    this.memberCount = 0,
   });
 
   @override
@@ -39,15 +44,28 @@ class ChatRoomView extends StatelessWidget {
         chatRepository: context.read<ChatRepository>(),
         mediaService: context.read<MediaService>(),
       ),
-      child: _ChatRoomContent(peerUser: peerUser),
+      child: _ChatRoomContent(
+        conversationId: conversationId,
+        peerUser: peerUser,
+        isGroup: isGroup,
+        memberCount: memberCount,
+      ),
     );
   }
 }
 
 class _ChatRoomContent extends StatelessWidget {
+  final String conversationId;
   final UserModel peerUser;
+  final bool isGroup;
+  final int memberCount;
 
-  const _ChatRoomContent({required this.peerUser});
+  const _ChatRoomContent({
+    required this.conversationId,
+    required this.peerUser,
+    required this.isGroup,
+    required this.memberCount,
+  });
 
   bool _isSameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
@@ -58,6 +76,7 @@ class _ChatRoomContent extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
     final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final primary = theme.colorScheme.primary;
 
     final vm = context.watch<ChatRoomViewModel>();
 
@@ -84,58 +103,34 @@ class _ChatRoomContent extends StatelessWidget {
                 ),
                 onChanged: vm.setSearchQuery,
               )
-            : Row(
-                children: [
-                  AppAvatar(
-                    imageUrl: peerUser.avatarUrl,
-                    name: peerUser.name,
-                    isOnline: peerUser.isOnline,
-                    size: 38.r,
-                  ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          peerUser.name,
-                          style: AppTypography.headingSmall(textPrimary),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Row(
-                          children: [
-                            if (vm.isPeerTyping || peerUser.isOnline)
-                              Container(
-                                width: 7.r,
-                                height: 7.r,
-                                margin: EdgeInsets.only(right: 5.w),
-                                decoration: BoxDecoration(
-                                  color: vm.isPeerTyping ? Colors.green : AppColors.success,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            Text(
-                              vm.isPeerTyping
-                                  ? 'typing...'
-                                  : (peerUser.isOnline ? 'Online' : 'Offline'),
-                              style: TextStyle(
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w500,
-                                color: vm.isPeerTyping
-                                    ? Colors.green
-                                    : (peerUser.isOnline ? AppColors.success : textSecondary),
-                                fontStyle: vm.isPeerTyping ? FontStyle.italic : FontStyle.normal,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+            : GestureDetector(
+                onTap: isGroup ? () => GroupInfoBottomSheet.show(context, conversationId: conversationId, groupName: peerUser.name, groupAvatar: peerUser.avatarUrl, memberCount: memberCount) : null,
+                child: Row(
+                  children: [
+                    AppAvatar(imageUrl: peerUser.avatarUrl, name: peerUser.name, isOnline: peerUser.isOnline, size: 38.r),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(peerUser.name, style: AppTypography.headingSmall(textPrimary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          Text(
+                            vm.isPeerTyping ? 'typing...' : (isGroup ? '${memberCount > 0 ? memberCount : 2} members • Click to edit' : (peerUser.isOnline ? 'Online' : 'Offline')),
+                            style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w500, color: vm.isPeerTyping ? Colors.green : (isGroup ? primary : (peerUser.isOnline ? AppColors.success : textSecondary))),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
         actions: [
+          if (isGroup && !vm.isSearching)
+            IconButton(
+              icon: const Icon(Icons.info_outline_rounded),
+              tooltip: 'Group Settings',
+              onPressed: () => GroupInfoBottomSheet.show(context, conversationId: conversationId, groupName: peerUser.name, groupAvatar: peerUser.avatarUrl, memberCount: memberCount),
+            ),
           IconButton(
             icon: Icon(vm.isSearching ? Icons.close : Icons.search_rounded),
             tooltip: vm.isSearching ? 'Close Search' : 'Search in Conversation',

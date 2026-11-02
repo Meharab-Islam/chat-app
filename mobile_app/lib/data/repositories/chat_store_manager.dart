@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import '../models/chat_conversation_model.dart';
 import '../models/message_model.dart';
 import '../services/media_service.dart';
@@ -17,7 +18,58 @@ class ChatStoreManager {
     required this.mediaService,
     required this.storageService,
     required this.currentUserId,
-  });
+  }) {
+    _loadCachedConversations();
+  }
+
+  void _loadCachedConversations() {
+    try {
+      final raw = storageService.getCachedConversations();
+      if (raw != null && raw.isNotEmpty) {
+        final list = (jsonDecode(raw) as List)
+            .map((item) => ChatConversationModel.fromJson(item as Map<String, dynamic>))
+            .toList();
+        if (list.isNotEmpty && conversations.isEmpty) {
+          conversations.addAll(list);
+          streamController.add(conversations);
+        }
+      }
+    } catch (_) {}
+  }
+
+  void saveConversationsToDisk() {
+    try {
+      final raw = jsonEncode(conversations.map((c) => c.toJson()).toList());
+      storageService.saveCachedConversations(raw);
+    } catch (_) {}
+  }
+
+  List<MessageModel> getCachedMessagesFor(String conversationId) {
+    if (messagesByConv.containsKey(conversationId) && messagesByConv[conversationId]!.isNotEmpty) {
+      return messagesByConv[conversationId]!;
+    }
+    try {
+      final raw = storageService.getCachedMessages(conversationId);
+      if (raw != null && raw.isNotEmpty) {
+        final list = (jsonDecode(raw) as List)
+            .map((item) => MessageModel.fromJson(item as Map<String, dynamic>))
+            .toList();
+        messagesByConv[conversationId] = list;
+        return list;
+      }
+    } catch (_) {}
+    return [];
+  }
+
+  void saveMessagesToDisk(String conversationId) {
+    try {
+      final msgs = messagesByConv[conversationId];
+      if (msgs != null && msgs.isNotEmpty) {
+        final slice = msgs.take(60).map((m) => m.toJson()).toList();
+        storageService.saveCachedMessages(conversationId, jsonEncode(slice));
+      }
+    } catch (_) {}
+  }
 
   void updateCurrentUserId(String id) {
     currentUserId = id;

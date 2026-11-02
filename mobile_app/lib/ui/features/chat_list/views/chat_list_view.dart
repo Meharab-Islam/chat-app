@@ -85,6 +85,8 @@ class ChatListView extends StatelessWidget {
                                       builder: (_) => ChatRoomView(
                                         conversationId: item.id,
                                         peerUser: item.peerUser,
+                                        isGroup: item.isGroup,
+                                        memberCount: item.memberCount,
                                       ),
                                     ),
                                   );

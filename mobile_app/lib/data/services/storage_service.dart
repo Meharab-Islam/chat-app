@@ -48,4 +48,10 @@ class StorageService {
   Future<void> setAutoSaveMedia(bool enabled) async {
     await prefs.setBool(_autoSaveKey, enabled);
   }
+
+  String? getCachedConversations() => prefs.getString('cached_conversations');
+  Future<void> saveCachedConversations(String raw) => prefs.setString('cached_conversations', raw);
+
+  String? getCachedMessages(String convId) => prefs.getString('cached_msgs_$convId');
+  Future<void> saveCachedMessages(String convId, String raw) => prefs.setString('cached_msgs_$convId', raw);
 }

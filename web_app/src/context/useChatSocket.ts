@@ -124,11 +124,16 @@ export const useChatSocket = ({
       }
     };
 
+    const onChatUpdated = () => {
+      refreshChats();
+    };
+
     socket.on('message:new', onNewMessage);
     socket.on('message:delivered', onDelivered);
     socket.on('message:read', onRead);
     socket.on('message:unsent', onUnsent);
     socket.on('message:reaction', onReaction);
+    socket.on('chat:updated', onChatUpdated);
     socket.on('presence:user_online', onOnline);
     socket.on('presence:user_offline', onOffline);
     socket.on('typing:start', onTypingStart);
@@ -140,6 +145,7 @@ export const useChatSocket = ({
       socket.off('message:read', onRead);
       socket.off('message:unsent', onUnsent);
       socket.off('message:reaction', onReaction);
+      socket.off('chat:updated', onChatUpdated);
       socket.off('presence:user_online', onOnline);
       socket.off('presence:user_offline', onOffline);
       socket.off('typing:start', onTypingStart);

@@ -94,6 +94,13 @@ class ApiService {
     return this.request<void>(`/chats/${chatId}`, { method: 'DELETE' });
   }
 
+  async updateGroup(chatId: string, name?: string, avatarFile?: File): Promise<Chat> {
+    const fd = new FormData();
+    if (name) fd.append('name', name);
+    if (avatarFile) fd.append('avatar', avatarFile);
+    return this.request<Chat>(`/chats/${chatId}`, { method: 'PUT', body: fd });
+  }
+
   // Messages
   async getMessages(chatId: string): Promise<Message[]> {
     return this.request<Message[]>(`/messages/${chatId}`);
