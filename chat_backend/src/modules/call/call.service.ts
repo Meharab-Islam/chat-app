@@ -18,7 +18,7 @@ export class CallService {
     // 1. Verify user exists
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, name: true, avatar: true },
+      select: { id: true, name: true, avatarUrl: true },
     });
 
     if (!user) {
@@ -32,7 +32,7 @@ export class CallService {
       },
       include: {
         chat: {
-          select: { id: true, isGroup: true, name: true },
+          select: { id: true, type: true, name: true },
         },
       },
     });
@@ -49,7 +49,7 @@ export class CallService {
       identity: user.id,
       name: user.name,
       metadata: JSON.stringify({
-        avatar: user.avatar,
+        avatar: user.avatarUrl,
         callType,
       }),
       ttl: '2h',
@@ -73,12 +73,12 @@ export class CallService {
       user: {
         id: user.id,
         name: user.name,
-        avatar: user.avatar,
+        avatar: user.avatarUrl,
       },
       chat: {
         id: membership.chat.id,
         name: membership.chat.name,
-        isGroup: membership.chat.isGroup,
+        isGroup: membership.chat.type === 'group',
       },
     };
   }

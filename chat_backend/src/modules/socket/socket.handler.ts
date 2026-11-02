@@ -142,29 +142,44 @@ export const registerSocketHandlers = (io: Server, socket: AuthenticatedSocket) 
         const [caller, chat] = await Promise.all([
           prisma.user.findUnique({
             where: { id: userId },
-            select: { id: true, name: true, avatar: true },
+            select: { id: true, name: true, avatarUrl: true },
           }),
           prisma.chat.findUnique({
             where: { id: chatId },
-            select: { id: true, name: true, isGroup: true },
+            select: {
+              id: true,
+              name: true,
+              type: true,
+              members: { select: { userId: true } },
+            },
           }),
         ]);
 
         if (!caller || !chat) return;
 
-        // Broadcast incoming call event to all members in the chat room
-        socket.to(`chat:${chatId}`).emit(SOCKET_EVENTS.CALL_INCOMING, {
+        const isGroup = chat.type === 'group';
+        const callPayload = {
           callId,
           chatId,
           caller: {
             id: caller.id,
             name: caller.name,
-            avatar: caller.avatar,
+            avatar: caller.avatarUrl,
           },
           callType,
-          isGroup: chat.isGroup,
-          chatName: chat.name || (chat.isGroup ? 'Group Call' : caller.name),
-        });
+          isGroup,
+          chatName: chat.name || (isGroup ? 'Group Call' : caller.name),
+        };
+
+        // Broadcast to chat room
+        socket.to(`chat:${chatId}`).emit(SOCKET_EVENTS.CALL_INCOMING, callPayload);
+
+        // Also emit to each member's personal user room so it reaches them anywhere
+        for (const m of chat.members) {
+          if (m.userId !== userId) {
+            emitToUser(m.userId, SOCKET_EVENTS.CALL_INCOMING, callPayload);
+          }
+        }
 
         logger.info(`Call initiated: [${callId}] in chat [${chatId}] by [${userId}]`);
       } catch (err) {

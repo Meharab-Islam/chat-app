@@ -72,9 +72,19 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       await newRoom.connect(data.url, data.token);
-      await newRoom.localParticipant.setMicrophoneEnabled(true);
+      try {
+        await newRoom.localParticipant.setMicrophoneEnabled(true);
+      } catch (micErr) {
+        console.warn('Microphone permission or device error:', micErr);
+        setIsMuted(true);
+      }
       if (callType === 'video') {
-        await newRoom.localParticipant.setCameraEnabled(true);
+        try {
+          await newRoom.localParticipant.setCameraEnabled(true);
+        } catch (camErr) {
+          console.warn('Camera permission or device error:', camErr);
+          setIsCameraOff(true);
+        }
       }
 
       roomRef.current = newRoom;
