@@ -7,6 +7,7 @@ import 'package:mobile_app/data/services/socket_service.dart';
 import 'package:mobile_app/data/services/storage_service.dart';
 import 'package:mobile_app/ui/core/design_system/app_colors.dart';
 import 'package:mobile_app/ui/features/auth/view_models/auth_view_model.dart';
+import 'package:mobile_app/data/services/video_thumbnail_cache.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -115,5 +116,24 @@ void main() {
     expect(msg.status, 'sending');
     final remainingForOverlay = msg.attachmentUrls.length - 3;
     expect(remainingForOverlay, 3);
+  });
+
+  test('VideoThumbnailCache local path registration and fast ratio lookup', () {
+    VideoThumbnailCache.registerLocalPath('http://server.com/video.mp4', '/local/video.mp4');
+    expect(VideoThumbnailCache.getCachedRatio('http://server.com/video.mp4'), null);
+  });
+
+  test('StorageService cached conversations and messages', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final storageService = StorageService(prefs: prefs);
+
+    expect(storageService.getCachedConversations(), null);
+    await storageService.saveCachedConversations('[{"id":"c1"}]');
+    expect(storageService.getCachedConversations(), '[{"id":"c1"}]');
+
+    expect(storageService.getCachedMessages('c1'), null);
+    await storageService.saveCachedMessages('c1', '[{"id":"m1"}]');
+    expect(storageService.getCachedMessages('c1'), '[{"id":"m1"}]');
   });
 }

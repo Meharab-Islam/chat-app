@@ -67,13 +67,14 @@ export class ChatService {
             lastReadAt: myMembership?.lastReadAt || null,
             lastMessage: lastMsg ? {
               id: lastMsg.id,
-              text: lastMsg.isUnsent ? 'This message was unsent' : lastMsg.text,
+              text: lastMsg.isUnsent ? 'This message was unsent' : (lastMsg.text || (lastMsg.attachments.length > 0 ? 'Attachment' : '')),
               type: lastMsg.type,
               status: lastMsg.status,
               sender: lastMsg.sender,
               createdAt: lastMsg.createdAt,
               isUnsent: lastMsg.isUnsent,
               hasAttachments: lastMsg.attachments.length > 0,
+              attachments: lastMsg.attachments,
             } : null,
             updatedAt: chat.updatedAt,
           };

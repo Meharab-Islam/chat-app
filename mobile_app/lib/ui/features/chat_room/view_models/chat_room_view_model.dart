@@ -44,38 +44,13 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
     chatRepository.socketService.joinChat(conversationId);
     _loadMessages();
     _socketUnsubscribers = initChatSocketEvents(
-      onPeerTypingChanged: (t) { if (!_isDisposed) { _isPeerTyping = t; notifyListeners(); } },
-      onNewMessageReceived: (m) {
+      messages: _messages,
+      notify: () { if (!_isDisposed) notifyListeners(); },
+      onPeerTyping: (t) { if (!_isDisposed) { _isPeerTyping = t; notifyListeners(); } },
+      onNewMessage: (m) {
         if (!_isDisposed) {
           if (!_messages.any((x) => x.id == m.id)) { _messages.insert(0, m); notifyListeners(); }
           if (m.senderId != currentUserId) chatRepository.markAsRead(conversationId, m.id);
-        }
-      },
-      onMessageDelivered: (msgId) {
-        if (_isDisposed) return;
-        final idx = _messages.indexWhere((m) => m.id == msgId);
-        if (idx != -1 && _messages[idx].status != 'read') {
-          _messages[idx] = _messages[idx].copyWith(status: 'delivered');
-          notifyListeners();
-        }
-      },
-      onPeerReadMessages: () {
-        if (_isDisposed) return;
-        bool changed = false;
-        for (int i = 0; i < _messages.length; i++) {
-          if (_messages[i].senderId == currentUserId && _messages[i].status != 'read') {
-            _messages[i] = _messages[i].copyWith(status: 'read');
-            changed = true;
-          }
-        }
-        if (changed) notifyListeners();
-      },
-      onMessageUnsent: (msgId) {
-        if (_isDisposed) return;
-        final idx = _messages.indexWhere((m) => m.id == msgId);
-        if (idx != -1) {
-          _messages[idx] = _messages[idx].copyWith(isUnsent: true, text: 'This message was unsent');
-          notifyListeners();
         }
       },
     );
@@ -166,6 +141,22 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
     }
   }
 
+  Future<void> pickMixedMedia() async {
+    final picked = await pickMixedMediaFiles();
+    if (picked.isNotEmpty && !_isDisposed) {
+      _selectedMedia.addAll(picked);
+      notifyListeners();
+    }
+  }
+
+  Future<void> pickAudio() async {
+    final picked = await pickAudioFiles();
+    if (picked.isNotEmpty && !_isDisposed) {
+      _selectedMedia.addAll(picked);
+      notifyListeners();
+    }
+  }
+
   Future<void> sendMediaMessage({String caption = ''}) async {
     if (_selectedMedia.isEmpty) return;
     final files = List<File>.from(_selectedMedia);
@@ -178,12 +169,19 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
       final l = f.path.toLowerCase();
       return l.endsWith('.mp4') || l.endsWith('.mov') || l.endsWith('.mkv') || l.endsWith('.webm');
     });
+    final hasAudio = files.any((f) {
+      final l = f.path.toLowerCase();
+      return l.endsWith('.mp3') || l.endsWith('.wav') || l.endsWith('.m4a') || l.endsWith('.aac') || l.endsWith('.ogg') || l.endsWith('.opus') || l.endsWith('.flac');
+    });
+    final mediaType = hasVideo
+        ? MessageMediaType.video
+        : (hasAudio ? MessageMediaType.audio : MessageMediaType.image);
 
     final tempId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
     _messages.insert(0, MessageModel(
       id: tempId, conversationId: conversationId, senderId: currentUserId,
       text: caption.trim(), status: 'sending', timestamp: DateTime.now(),
-      mediaType: hasVideo ? MessageMediaType.video : MessageMediaType.image,
+      mediaType: mediaType,
       attachmentUrls: files.map((f) => f.path).toList(), mediaUrl: files.first.path,
     ));
     notifyListeners();

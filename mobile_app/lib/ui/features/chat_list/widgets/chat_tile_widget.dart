@@ -103,7 +103,8 @@ class ChatTileWidget extends StatelessWidget {
     final isMe = currentUserId != null && message.senderId == currentUserId;
     final isAttachment = message.mediaType != MessageMediaType.none ||
         (message.mediaUrl != null && message.mediaUrl!.isNotEmpty) ||
-        message.attachmentUrls.isNotEmpty;
+        message.attachmentUrls.isNotEmpty ||
+        message.text == 'Attachment';
 
     IconData? mediaIcon;
     String text;
@@ -111,10 +112,18 @@ class ChatTileWidget extends StatelessWidget {
     if (message.isUnsent) {
       text = 'This message was unsent';
     } else if (isAttachment) {
-      mediaIcon = Icons.attach_file_rounded;
+      if (message.mediaType == MessageMediaType.image) {
+        mediaIcon = Icons.image_rounded;
+      } else if (message.mediaType == MessageMediaType.video) {
+        mediaIcon = Icons.videocam_rounded;
+      } else if (message.mediaType == MessageMediaType.audio) {
+        mediaIcon = Icons.mic_rounded;
+      } else {
+        mediaIcon = Icons.attach_file_rounded;
+      }
       text = isMe ? 'You: Attachment' : 'Attachment';
     } else {
-      text = isMe && message.text.isNotEmpty ? 'You: ${message.text}' : message.text;
+      text = isMe && message.text.isNotEmpty ? 'You: ${message.text}' : (message.text.isNotEmpty ? message.text : 'Attachment');
     }
 
     return Row(

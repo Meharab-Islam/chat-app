@@ -119,3 +119,4 @@ class VideoThumbnailCache {
     _lruList.clear();
   }
 }
+

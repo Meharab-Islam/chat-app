@@ -5,6 +5,7 @@ import '../../../core/design_system/app_spacing.dart';
 import '../../../core/widgets/app_cached_image.dart';
 import '../../media_viewer/views/image_viewer_view.dart';
 import '../../media_viewer/views/video_player_view.dart';
+import 'audio_message_widget.dart';
 import 'single_media_message_widget.dart';
 import 'video_thumbnail_widget.dart';
 
@@ -20,10 +21,27 @@ class MediaGridMessageWidget extends StatelessWidget {
 
   bool _isVideo(String url) {
     final l = url.toLowerCase();
-    return l.endsWith('.mp4') || l.endsWith('.mov') || l.endsWith('.mkv') || l.endsWith('.webm') || l.endsWith('.avi');
+    return l.endsWith('.mp4') || l.endsWith('.mov') || l.endsWith('.mkv') || l.endsWith('.webm') || l.endsWith('.avi') || l.endsWith('.3gp');
+  }
+
+  bool _isAudio(String url) {
+    final l = url.toLowerCase();
+    return l.endsWith('.mp3') || l.endsWith('.wav') || l.endsWith('.m4a') || l.endsWith('.aac') || l.endsWith('.ogg') || l.endsWith('.opus') || l.endsWith('.flac');
   }
 
   void _open(BuildContext context, String url) {
+    if (_isAudio(url)) {
+      showModalBottomSheet(
+        context: context,
+        builder: (_) => SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+            child: AudioMessageWidget(audioUrl: url, isMe: false),
+          ),
+        ),
+      );
+      return;
+    }
     final isVid = _isVideo(url) || message.mediaType.isVideo;
     Navigator.push(
       context,
@@ -38,6 +56,7 @@ class MediaGridMessageWidget extends StatelessWidget {
   Widget _buildTile(BuildContext context, String url, double w, double h, {BorderRadius? radius}) {
     final r = radius ?? AppSpacing.radiusSm;
     final isVid = _isVideo(url) || (message.mediaType.isVideo && message.attachmentUrls.length <= 1);
+    final isAud = _isAudio(url);
     if (isVid) {
       return VideoThumbnailWidget(
         videoUrl: url,
@@ -45,6 +64,28 @@ class MediaGridMessageWidget extends StatelessWidget {
         height: h,
         borderRadius: r,
         onTap: () => _open(context, url),
+      );
+    }
+    if (isAud) {
+      return GestureDetector(
+        onTap: () => _open(context, url),
+        child: Container(
+          width: w,
+          height: h,
+          decoration: BoxDecoration(color: const Color(0xFF0F172A), borderRadius: r),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(6.r),
+                decoration: const BoxDecoration(color: Color(0xFF0284C7), shape: BoxShape.circle),
+                child: Icon(Icons.audiotrack_rounded, color: Colors.white, size: 20.r),
+              ),
+              SizedBox(height: 4.h),
+              Text('Audio', style: TextStyle(color: Colors.white70, fontSize: 10.sp, fontWeight: FontWeight.w600)),
+            ],
+          ),
+        ),
       );
     }
     return GestureDetector(
@@ -64,6 +105,9 @@ class MediaGridMessageWidget extends StatelessWidget {
 
     if (total == 1) {
       final url = urls.first;
+      if (_isAudio(url)) {
+        return AudioMessageWidget(audioUrl: url, isMe: false);
+      }
       final isVid = _isVideo(url) || message.mediaType.isVideo;
       return SingleMediaMessageWidget(
         message: message,

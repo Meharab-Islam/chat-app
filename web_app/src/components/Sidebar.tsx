@@ -60,15 +60,18 @@ export const Sidebar: React.FC<Props> = ({ onOpenNewChat, onOpenCreateGroup, onO
       );
     }
 
+    const hasAtt = (msg as any).hasAttachments || (msg.attachments && msg.attachments.length > 0) || msg.type === 'media' || msg.type === 'audio' || msg.type === 'file';
     let icon = null;
-    if (msg.type === 'media' || msg.attachments?.[0]?.fileType === 'image') icon = <ImageIcon className="w-3.5 h-3.5 inline mr-1" />;
-    else if (msg.type === 'audio' || msg.attachments?.[0]?.fileType === 'audio') icon = <Mic className="w-3.5 h-3.5 inline mr-1" />;
-    else if (msg.attachments && msg.attachments.length > 0) icon = <FileText className="w-3.5 h-3.5 inline mr-1" />;
+    if (msg.type === 'media' || msg.attachments?.[0]?.fileType === 'image') icon = <ImageIcon className="w-3.5 h-3.5 inline mr-1 text-zinc-400 shrink-0" />;
+    else if (msg.type === 'audio' || msg.attachments?.[0]?.fileType === 'audio') icon = <Mic className="w-3.5 h-3.5 inline mr-1 text-zinc-400 shrink-0" />;
+    else if (hasAtt) icon = <FileText className="w-3.5 h-3.5 inline mr-1 text-zinc-400 shrink-0" />;
+
+    const text = msg.text || (hasAtt ? 'Attachment' : '');
 
     return (
       <span className="flex items-center truncate text-zinc-400">
         {icon}
-        <span className="truncate">{msg.text || (msg.attachments?.[0]?.fileName || 'Attachment')}</span>
+        <span className="truncate">{text || 'Attachment'}</span>
       </span>
     );
   };

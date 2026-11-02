@@ -8,6 +8,8 @@ import '../../../core/design_system/app_colors.dart';
 class ChatInputBarWidget extends StatefulWidget {
   final ValueChanged<String> onSendText;
   final VoidCallback onPickMedia;
+  final VoidCallback? onPickMixedMedia;
+  final VoidCallback? onPickAudio;
   final VoidCallback onSendFiles;
   final ValueChanged<File> onSendVoice;
   final bool hasSelectedMedia;
@@ -16,6 +18,8 @@ class ChatInputBarWidget extends StatefulWidget {
     super.key,
     required this.onSendText,
     required this.onPickMedia,
+    this.onPickMixedMedia,
+    this.onPickAudio,
     required this.onSendFiles,
     required this.onSendVoice,
     this.hasSelectedMedia = false,
@@ -60,10 +64,7 @@ class _ChatInputBarWidgetState extends State<ChatInputBarWidget> {
   Future<void> _startRecording() async {
     final started = await _voiceService.startRecording();
     if (started) {
-      setState(() {
-        _isRecording = true;
-        _recordSeconds = 0;
-      });
+      setState(() { _isRecording = true; _recordSeconds = 0; });
       _recordTimer = Timer.periodic(const Duration(seconds: 1), (_) {
         if (mounted) setState(() => _recordSeconds++);
       });
@@ -209,31 +210,34 @@ class _ChatInputBarWidgetState extends State<ChatInputBarWidget> {
         child: Wrap(
           children: [
             ListTile(
+              leading: const Icon(Icons.perm_media_outlined, color: Colors.blueAccent),
+              title: const Text('Audio & Video Mixed (Gallery / Device)'),
+              subtitle: const Text('Pick audio, video, & images together'),
+              onTap: () { Navigator.pop(ctx); (widget.onPickMixedMedia ?? widget.onPickMedia)(); },
+            ),
+            ListTile(
               leading: const Icon(Icons.photo_library_outlined),
               title: const Text('Photos & Videos (Gallery)'),
-              subtitle: const Text('Select multiple photos & videos together'),
-              onTap: () {
-                Navigator.pop(ctx);
-                widget.onPickMedia();
-              },
+              subtitle: const Text('Select multiple photos & videos'),
+              onTap: () { Navigator.pop(ctx); widget.onPickMedia(); },
+            ),
+            ListTile(
+              leading: const Icon(Icons.audiotrack_outlined, color: Colors.amber),
+              title: const Text('Audio & Music'),
+              subtitle: const Text('Select songs or audio recordings'),
+              onTap: () { Navigator.pop(ctx); (widget.onPickAudio ?? widget.onPickMedia)(); },
             ),
             ListTile(
               leading: const Icon(Icons.insert_drive_file_outlined),
               title: const Text('Document & Files (PDF, APK, ZIP)'),
-              subtitle: const Text('Send any file, archive, or app'),
-              onTap: () {
-                Navigator.pop(ctx);
-                widget.onSendFiles();
-              },
+              subtitle: const Text('Send any file or archive'),
+              onTap: () { Navigator.pop(ctx); widget.onSendFiles(); },
             ),
             ListTile(
               leading: const Icon(Icons.mic_none_outlined),
               title: const Text('Record Voice Message'),
               subtitle: const Text('Send instant audio note'),
-              onTap: () {
-                Navigator.pop(ctx);
-                _startRecording();
-              },
+              onTap: () { Navigator.pop(ctx); _startRecording(); },
             ),
           ],
         ),

@@ -87,11 +87,25 @@ class ChatConversationModel {
     MessageModel? lastMsg;
     if (json['lastMessage'] != null) {
       final lm = json['lastMessage'] as Map<String, dynamic>;
+      final hasAtt = lm['hasAttachments'] == true || (lm['attachments'] as List?)?.isNotEmpty == true;
+      final rawType = lm['type'] as String? ?? '';
+      MessageMediaType mType = MessageMediaType.none;
+      if (rawType == 'media') {
+        mType = MessageMediaType.image;
+      } else if (rawType == 'audio') {
+        mType = MessageMediaType.audio;
+      } else if (hasAtt) {
+        mType = MessageMediaType.file;
+      }
+
+      final text = lm['text'] as String? ?? (hasAtt ? 'Attachment' : '');
+
       lastMsg = MessageModel(
         id: lm['id'] as String? ?? '',
         conversationId: json['id'] as String,
         senderId: lm['sender']?['id'] as String? ?? '',
-        text: lm['text'] as String? ?? '',
+        text: text.isNotEmpty ? text : (hasAtt ? 'Attachment' : ''),
+        mediaType: mType,
         status: lm['status'] as String? ?? 'sent',
         isUnsent: lm['isUnsent'] as bool? ?? false,
         timestamp: DateTime.tryParse(lm['createdAt'] as String? ?? '') ?? DateTime.now(),
