@@ -20,9 +20,11 @@ class ApiClient {
     return '$baseHost$cleanPath';
   }
 
+  static SharedPreferences? _cachedPrefs;
+
   Future<Map<String, String>> _headers() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('accessToken');
+    _cachedPrefs ??= await SharedPreferences.getInstance();
+    final token = _cachedPrefs?.getString('accessToken');
     final headers = <String, String>{'Content-Type': 'application/json'};
     if (token != null && token.isNotEmpty) {
       headers['Authorization'] = 'Bearer $token';
@@ -64,8 +66,8 @@ class ApiClient {
     List<File> files = const [],
     String fileFieldName = 'files',
   }) async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('accessToken');
+    _cachedPrefs ??= await SharedPreferences.getInstance();
+    final token = _cachedPrefs?.getString('accessToken');
     final uri = Uri.parse('$baseUrl$endpoint');
     final request = http.MultipartRequest('POST', uri);
 
