@@ -1,9 +1,15 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
-import { Room, RoomEvent, Track } from 'livekit-client';
+import { Room, RoomEvent } from 'livekit-client';
 import { api } from '../services/api';
 import { getSocket } from '../services/socket';
 import { soundService } from '../utils/sound';
 import { IncomingCall } from '../types';
+import {
+  toggleMicrophoneTrack,
+  toggleCameraTrack,
+  toggleScreenShareTrack,
+  attachParticipantListeners,
+} from '../utils/callMedia';
 
 interface CallContextType {
   incomingCall: IncomingCall | null;
@@ -65,6 +71,10 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const newRoom = new Room({
         adaptiveStream: true,
         dynacast: true,
+        publishDefaults: {
+          stopMicTrackOnMute: false,
+          dtx: true,
+        },
       });
 
       newRoom.on(RoomEvent.Disconnected, () => {
@@ -72,25 +82,35 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       await newRoom.connect(data.url, data.token);
+
+      attachParticipantListeners(newRoom, (state) => {
+        setIsMuted(state.isMuted);
+        setIsCameraOff(state.isCameraOff);
+        setIsScreenSharing(state.isScreenSharing);
+      });
+
       try {
         await newRoom.localParticipant.setMicrophoneEnabled(true);
+        setIsMuted(false);
       } catch (micErr) {
         console.warn('Microphone permission or device error:', micErr);
         setIsMuted(true);
       }
+
       if (callType === 'video') {
         try {
           await newRoom.localParticipant.setCameraEnabled(true);
+          setIsCameraOff(false);
         } catch (camErr) {
           console.warn('Camera permission or device error:', camErr);
           setIsCameraOff(true);
         }
+      } else {
+        setIsCameraOff(true);
       }
 
       roomRef.current = newRoom;
       setRoom(newRoom);
-      setIsCameraOff(callType === 'audio');
-      setIsMuted(false);
       return newRoom;
     } catch (err) {
       console.error('Failed to connect to LiveKit room:', err);
@@ -136,24 +156,18 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const toggleMute = async () => {
-    if (!roomRef.current) return;
-    const next = !isMuted;
-    await roomRef.current.localParticipant.setMicrophoneEnabled(!next);
-    setIsMuted(next);
+    const nextMuted = await toggleMicrophoneTrack(roomRef.current);
+    setIsMuted(nextMuted);
   };
 
   const toggleCamera = async () => {
-    if (!roomRef.current) return;
-    const next = !isCameraOff;
-    await roomRef.current.localParticipant.setCameraEnabled(!next);
-    setIsCameraOff(next);
+    const nextCameraOff = await toggleCameraTrack(roomRef.current);
+    setIsCameraOff(nextCameraOff);
   };
 
   const toggleScreenShare = async () => {
-    if (!roomRef.current) return;
-    const next = !isScreenSharing;
-    await roomRef.current.localParticipant.setScreenShareEnabled(next);
-    setIsScreenSharing(next);
+    const nextSharing = await toggleScreenShareTrack(roomRef.current, isScreenSharing);
+    setIsScreenSharing(nextSharing);
   };
 
   useEffect(() => {
@@ -174,10 +188,6 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
       socket.on('call:ended', () => {
         soundService.stopRinging();
         setIncomingCall(null);
-      });
-
-      socket.on('call:rejected', () => {
-        // Peer declined
       });
     }, 500);
 
@@ -213,4 +223,3 @@ export const useCall = () => {
   if (!context) throw new Error('useCall must be used within a CallProvider');
   return context;
 };
-

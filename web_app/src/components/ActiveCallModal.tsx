@@ -119,26 +119,32 @@ export const ActiveCallModal: React.FC = () => {
       <div className="h-24 px-6 flex items-center justify-center gap-4 bg-zinc-900/80 border-t border-zinc-800/80">
         <button
           onClick={toggleMute}
-          title={isMuted ? 'Unmute microphone' : 'Mute microphone'}
-          className={`p-4 rounded-full transition-all duration-200 ${
+          title={isMuted ? 'Microphone Muted (Click to Unmute)' : 'Microphone Active (Click to Mute)'}
+          className={`relative p-4 rounded-full transition-all duration-200 ${
             isMuted
-              ? 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30'
-              : 'bg-zinc-800 text-white hover:bg-zinc-700'
+              ? 'bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30'
+              : 'bg-zinc-800 text-emerald-400 hover:bg-zinc-700 ring-1 ring-emerald-500/30'
           }`}
         >
           {isMuted ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
+          {!isMuted && (
+            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          )}
         </button>
 
         <button
           onClick={toggleCamera}
-          title={isCameraOff ? 'Turn camera on' : 'Turn camera off'}
-          className={`p-4 rounded-full transition-all duration-200 ${
+          title={isCameraOff ? 'Camera Off (Click to Turn On)' : 'Camera On (Click to Turn Off)'}
+          className={`relative p-4 rounded-full transition-all duration-200 ${
             isCameraOff
-              ? 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30'
-              : 'bg-zinc-800 text-white hover:bg-zinc-700'
+              ? 'bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30'
+              : 'bg-zinc-800 text-indigo-400 hover:bg-zinc-700 ring-1 ring-indigo-500/30'
           }`}
         >
           {isCameraOff ? <VideoOff className="w-6 h-6" /> : <Video className="w-6 h-6" />}
+          {!isCameraOff && (
+            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-indigo-500" />
+          )}
         </button>
 
         <button

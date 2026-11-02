@@ -43,11 +43,23 @@ export const ParticipantTile: React.FC<Props> = ({ participant, isLocal = false 
 
     participant.on('trackMuted', updateTracks);
     participant.on('trackUnmuted', updateTracks);
+    participant.on('trackPublished', updateTracks);
+    participant.on('trackUnpublished', updateTracks);
+    participant.on('localTrackPublished', updateTracks);
+    participant.on('localTrackUnpublished', updateTracks);
+    participant.on('trackSubscribed', updateTracks);
+    participant.on('trackUnsubscribed', updateTracks);
     participant.on('isSpeakingChanged', (speaking) => setIsSpeaking(speaking));
 
     return () => {
       participant.off('trackMuted', updateTracks);
       participant.off('trackUnmuted', updateTracks);
+      participant.off('trackPublished', updateTracks);
+      participant.off('trackUnpublished', updateTracks);
+      participant.off('localTrackPublished', updateTracks);
+      participant.off('localTrackUnpublished', updateTracks);
+      participant.off('trackSubscribed', updateTracks);
+      participant.off('trackUnsubscribed', updateTracks);
     };
   }, [participant, isLocal]);
 

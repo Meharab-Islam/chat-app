@@ -12,6 +12,7 @@ import 'data/repositories/chat_repository.dart';
 import 'data/services/api_client.dart';
 import 'data/services/auth_service.dart';
 import 'data/services/call_service.dart';
+import 'data/services/callkit_service.dart';
 import 'data/services/chat_api_service.dart';
 import 'data/services/fcm_service.dart';
 import 'data/services/media_service.dart';
@@ -19,6 +20,7 @@ import 'data/services/notification_service.dart';
 import 'data/services/storage_service.dart';
 import 'ui/core/design_system/app_theme.dart';
 import 'ui/core/design_system/theme_provider.dart';
+import 'ui/core/navigation/app_navigator.dart';
 import 'ui/features/auth/view_models/auth_view_model.dart';
 import 'ui/features/auth/views/login_view.dart';
 import 'ui/features/call/view_models/call_view_model.dart';
@@ -52,6 +54,7 @@ Future<void> main() async {
   final apiClient = ApiClient();
   final socketService = authService.socketService;
   final callService = CallService();
+  final callkitService = CallkitService();
   final chatApiService = ChatApiService(apiClient: apiClient);
 
   // Initialize FCM device token registration and handlers
@@ -91,6 +94,7 @@ Future<void> main() async {
             callService: callService,
             chatApiService: chatApiService,
             socketService: socketService,
+            callkitService: callkitService,
           ),
         ),
         ChangeNotifierProxyProvider2<
@@ -125,6 +129,7 @@ class MinimalChatApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (context, child) {
         return MaterialApp(
+          navigatorKey: AppNavigator.navigatorKey,
           title: 'Minimal Chat',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.createLightTheme(

@@ -116,7 +116,7 @@ class IncomingCallOverlay extends StatelessWidget {
                       ),
                       label: const Text('Accept'),
                       onPressed: () =>
-                          context.read<CallViewModel>().acceptCall(context),
+                          context.read<CallViewModel>().acceptCall(),
                     ),
                   ),
                 ],
