@@ -1,6 +1,8 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
 
@@ -20,12 +22,23 @@ class SelectedMediaPreviewWidget extends StatelessWidget {
 
   bool _isVideo(String path) {
     final l = path.toLowerCase();
-    return l.endsWith('.mp4') || l.endsWith('.mov') || l.endsWith('.mkv') || l.endsWith('.webm') || l.endsWith('.3gp') || l.endsWith('.avi');
+    return l.endsWith('.mp4') ||
+        l.endsWith('.mov') ||
+        l.endsWith('.mkv') ||
+        l.endsWith('.webm') ||
+        l.endsWith('.3gp') ||
+        l.endsWith('.avi');
   }
 
   bool _isAudio(String path) {
     final l = path.toLowerCase();
-    return l.endsWith('.mp3') || l.endsWith('.wav') || l.endsWith('.m4a') || l.endsWith('.aac') || l.endsWith('.ogg') || l.endsWith('.opus') || l.endsWith('.flac');
+    return l.endsWith('.mp3') ||
+        l.endsWith('.wav') ||
+        l.endsWith('.m4a') ||
+        l.endsWith('.aac') ||
+        l.endsWith('.ogg') ||
+        l.endsWith('.opus') ||
+        l.endsWith('.flac');
   }
 
   @override
@@ -58,7 +71,9 @@ class SelectedMediaPreviewWidget extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w600,
-                  color: isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary,
+                  color: isDark
+                      ? AppColors.darkTextPrimary
+                      : AppColors.lightTextPrimary,
                 ),
               ),
               GestureDetector(
@@ -96,7 +111,13 @@ class SelectedMediaPreviewWidget extends StatelessWidget {
                         children: [
                           Icon(Icons.add_circle_outline_rounded, size: 22.r),
                           SizedBox(height: 2.h),
-                          Text('Add More', style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w600)),
+                          Text(
+                            'Add More',
+                            style: TextStyle(
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -128,44 +149,73 @@ class SelectedMediaPreviewWidget extends StatelessWidget {
                                         color: Color(0xFF0284C7),
                                         shape: BoxShape.circle,
                                       ),
-                                      child: Icon(Icons.audiotrack_rounded, color: Colors.white, size: 16.r),
+                                      child: Icon(
+                                        Icons.audiotrack_rounded,
+                                        color: Colors.white,
+                                        size: 16.r,
+                                      ),
                                     ),
                                     SizedBox(height: 3.h),
                                     Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 4.w),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 4.w,
+                                      ),
                                       child: Text(
                                         file.path.split('/').last,
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.w600),
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 8.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
                               )
                             : (isVideo
-                                ? Container(
-                                    color: const Color(0xFF1E2028),
-                                    child: Stack(
-                                      fit: StackFit.expand,
-                                      children: [
-                                        const Center(child: Icon(Icons.videocam_rounded, color: Colors.white38)),
-                                        Center(
-                                          child: Container(
-                                            padding: EdgeInsets.all(4.r),
-                                            decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
-                                            child: Icon(Icons.play_arrow_rounded, color: Colors.white, size: 18.r),
+                                  ? Container(
+                                      color: const Color(0xFF1E2028),
+                                      child: Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          const Center(
+                                            child: Icon(
+                                              Icons.videocam_rounded,
+                                              color: Colors.white38,
+                                            ),
                                           ),
-                                        ),
-                                        Positioned(
-                                          bottom: 2.h,
-                                          left: 4.w,
-                                          child: Text('VIDEO', style: TextStyle(color: Colors.white70, fontSize: 8.sp, fontWeight: FontWeight.bold)),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : Image.file(file, fit: BoxFit.cover)),
+                                          Center(
+                                            child: Container(
+                                              padding: EdgeInsets.all(4.r),
+                                              decoration: const BoxDecoration(
+                                                color: Colors.black54,
+                                                shape: BoxShape.circle,
+                                              ),
+                                              child: Icon(
+                                                Icons.play_arrow_rounded,
+                                                color: Colors.white,
+                                                size: 18.r,
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            bottom: 2.h,
+                                            left: 4.w,
+                                            child: Text(
+                                              'VIDEO',
+                                              style: TextStyle(
+                                                color: Colors.white70,
+                                                fontSize: 8.sp,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  : Image.file(file, fit: BoxFit.cover)),
                       ),
                     ),
                     Positioned(
@@ -179,7 +229,11 @@ class SelectedMediaPreviewWidget extends StatelessWidget {
                             color: Colors.red,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.close, size: 14.r, color: Colors.white),
+                          child: Icon(
+                            Icons.close,
+                            size: 14.r,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),

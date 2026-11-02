@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import '../models/chat_conversation_model.dart';
 import '../models/message_model.dart';
 import '../models/user_model.dart';
@@ -13,7 +14,10 @@ class ChatApiService {
     final data = await apiClient.get('/chats');
     if (data is List) {
       return data
-          .map((item) => ChatConversationModel.fromJson(item as Map<String, dynamic>))
+          .map(
+            (item) =>
+                ChatConversationModel.fromJson(item as Map<String, dynamic>),
+          )
           .toList();
     }
     return [];
@@ -63,14 +67,19 @@ class ChatApiService {
     await apiClient.delete('/chats/$chatId');
   }
 
-  Future<void> markChatAsRead(String chatId, [String? lastReadMessageId]) async {
+  Future<void> markChatAsRead(
+    String chatId, [
+    String? lastReadMessageId,
+  ]) async {
     await apiClient.put('/messages/$chatId/read', {
       'lastReadMessageId': ?lastReadMessageId,
     });
   }
 
   Future<List<UserModel>> searchUsers(String query) async {
-    final data = await apiClient.get('/users/search?q=${Uri.encodeComponent(query)}');
+    final data = await apiClient.get(
+      '/users/search?q=${Uri.encodeComponent(query)}',
+    );
     if (data is List) {
       return data
           .map((item) => UserModel.fromJson(item as Map<String, dynamic>))
@@ -80,22 +89,34 @@ class ChatApiService {
   }
 
   Future<ChatConversationModel?> createDirectChat(String recipientId) async {
-    final data = await apiClient.post('/chats/direct', {'recipientId': recipientId});
+    final data = await apiClient.post('/chats/direct', {
+      'recipientId': recipientId,
+    });
     if (data is Map<String, dynamic>) {
       return ChatConversationModel.fromJson(data);
     }
     return null;
   }
 
-  Future<ChatConversationModel?> createGroupChat(String name, List<String> memberIds) async {
-    final data = await apiClient.post('/chats/group', {'name': name, 'memberIds': memberIds});
+  Future<ChatConversationModel?> createGroupChat(
+    String name,
+    List<String> memberIds,
+  ) async {
+    final data = await apiClient.post('/chats/group', {
+      'name': name,
+      'memberIds': memberIds,
+    });
     if (data is Map<String, dynamic>) {
       return ChatConversationModel.fromJson(data);
     }
     return null;
   }
 
-  Future<ChatConversationModel?> updateGroup(String chatId, {String? name, File? avatarFile}) async {
+  Future<ChatConversationModel?> updateGroup(
+    String chatId, {
+    String? name,
+    File? avatarFile,
+  }) async {
     final fields = <String, String>{};
     if (name != null && name.trim().isNotEmpty) fields['name'] = name.trim();
     final files = avatarFile != null ? [avatarFile] : <File>[];
@@ -112,8 +133,13 @@ class ChatApiService {
     return null;
   }
 
-  Future<List<MessageModel>> searchMessagesInChat(String chatId, String query) async {
-    final data = await apiClient.get('/messages/$chatId/search?q=${Uri.encodeComponent(query)}');
+  Future<List<MessageModel>> searchMessagesInChat(
+    String chatId,
+    String query,
+  ) async {
+    final data = await apiClient.get(
+      '/messages/$chatId/search?q=${Uri.encodeComponent(query)}',
+    );
     if (data is List) {
       return data
           .map((item) => MessageModel.fromJson(item as Map<String, dynamic>))
@@ -122,7 +148,11 @@ class ChatApiService {
     return [];
   }
 
-  Future<void> forwardMessage(String messageId, List<String> targetChatIds, [String? text]) async {
+  Future<void> forwardMessage(
+    String messageId,
+    List<String> targetChatIds, [
+    String? text,
+  ]) async {
     await apiClient.post('/messages/forward', {
       'messageId': messageId,
       'targetChatIds': targetChatIds,
@@ -140,5 +170,19 @@ class ChatApiService {
 
   Future<void> reactToMessage(String messageId, String emoji) async {
     await apiClient.post('/messages/$messageId/react', {'emoji': emoji});
+  }
+
+  Future<Map<String, dynamic>?> getCallToken(
+    String chatId, {
+    String callType = 'video',
+  }) async {
+    final data = await apiClient.post('/calls/token', {
+      'chatId': chatId,
+      'callType': callType,
+    });
+    if (data is Map<String, dynamic>) {
+      return data;
+    }
+    return null;
   }
 }

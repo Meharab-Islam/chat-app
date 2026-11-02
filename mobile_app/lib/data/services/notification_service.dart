@@ -1,12 +1,15 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
+
 import 'api_client.dart';
 
 @pragma('vm:entry-point')
 Future<void> notificationTapBackground(NotificationResponse details) async {
   WidgetsFlutterBinding.ensureInitialized();
-  debugPrint('🔔 [NotificationService] Background action: ${details.actionId}, input: ${details.input}');
+  debugPrint(
+    '🔔 [NotificationService] Background action: ${details.actionId}, input: ${details.input}',
+  );
 
   final plugin = FlutterLocalNotificationsPlugin();
   if (details.id != null) {
@@ -18,13 +21,15 @@ Future<void> notificationTapBackground(NotificationResponse details) async {
   if (details.actionId == 'action_reply') {
     final replyText = details.input?.trim();
     final chatId = details.payload;
-    if (replyText != null && replyText.isNotEmpty && chatId != null && chatId.isNotEmpty) {
+    if (replyText != null &&
+        replyText.isNotEmpty &&
+        chatId != null &&
+        chatId.isNotEmpty) {
       try {
         final client = ApiClient();
-        await client.post('/messages', {
-          'chatId': chatId,
-          'text': replyText,
-        }).timeout(const Duration(seconds: 10));
+        await client
+            .post('/messages', {'chatId': chatId, 'text': replyText})
+            .timeout(const Duration(seconds: 10));
         debugPrint('✅ [NotificationService] Direct reply sent: $replyText');
       } catch (e) {
         debugPrint('❌ [NotificationService] Failed to send direct reply: $e');
@@ -41,7 +46,8 @@ class NotificationService {
   static final NotificationService instance = NotificationService._internal();
   NotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notifications =
+      FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
   static const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -56,7 +62,9 @@ class NotificationService {
   Future<void> initialize() async {
     if (_initialized) return;
 
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
     final darwinSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -91,14 +99,18 @@ class NotificationService {
     );
 
     final androidPlugin = _notifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (androidPlugin != null) {
       await androidPlugin.createNotificationChannel(channel);
       await androidPlugin.requestNotificationsPermission();
     }
 
     _initialized = true;
-    debugPrint('NotificationService initialized with sound, reply action & channel');
+    debugPrint(
+      'NotificationService initialized with sound, reply action & channel',
+    );
   }
 
   Future<void> showChatNotification({
@@ -114,7 +126,9 @@ class NotificationService {
     if (imageUrl != null && imageUrl.isNotEmpty) {
       try {
         final resolvedUrl = ApiClient.resolveUrl(imageUrl);
-        final res = await http.get(Uri.parse(resolvedUrl)).timeout(const Duration(seconds: 4));
+        final res = await http
+            .get(Uri.parse(resolvedUrl))
+            .timeout(const Duration(seconds: 4));
         if (res.statusCode == 200) {
           bigPictureBitmap = ByteArrayAndroidBitmap(res.bodyBytes);
         }
@@ -146,11 +160,7 @@ class NotificationService {
           'action_reply',
           'Reply',
           icon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-          inputs: [
-            AndroidNotificationActionInput(
-              label: 'Type a reply...',
-            ),
-          ],
+          inputs: [AndroidNotificationActionInput(label: 'Type a reply...')],
           cancelNotification: true,
         ),
       ],

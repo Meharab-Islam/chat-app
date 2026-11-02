@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
+
 import 'api_client.dart';
 
 class SocketService {
@@ -21,7 +22,9 @@ class SocketService {
     disconnect();
 
     final url = socketUrl ?? ApiClient.baseHost;
-    debugPrint('🔌 [SocketService] Connecting to $url with token: ${accessToken.substring(0, accessToken.length > 15 ? 15 : accessToken.length)}...');
+    debugPrint(
+      '🔌 [SocketService] Connecting to $url with token: ${accessToken.substring(0, accessToken.length > 15 ? 15 : accessToken.length)}...',
+    );
 
     try {
       _socket = io.io(
@@ -39,7 +42,9 @@ class SocketService {
 
       _socket?.onConnect((_) {
         _isConnected = true;
-        debugPrint('✅ [SocketService] Connected to backend: $url (socketId: ${_socket?.id})');
+        debugPrint(
+          '✅ [SocketService] Connected to backend: $url (socketId: ${_socket?.id})',
+        );
         _attachAllListeners();
         if (_currentChatId != null) {
           _socket?.emit('chat:join', _currentChatId);
@@ -151,15 +156,33 @@ class SocketService {
     }
   }
 
-  VoidCallback onNewMessage(Function(dynamic data) callback) => _on('message:new', callback);
-  VoidCallback onMessageDelivered(Function(dynamic data) callback) => _on('message:delivered', callback);
-  VoidCallback onMessageRead(Function(dynamic data) callback) => _on('message:read', callback);
-  VoidCallback onMessageUnsent(Function(dynamic data) callback) => _on('message:unsent', callback);
-  VoidCallback onMessageReaction(Function(dynamic data) callback) => _on('message:reaction', callback);
-  VoidCallback onUserOnline(Function(dynamic data) callback) => _on('presence:user_online', callback);
-  VoidCallback onUserOffline(Function(dynamic data) callback) => _on('presence:user_offline', callback);
-  VoidCallback onTypingStart(Function(dynamic data) callback) => _on('typing:start', callback);
-  VoidCallback onTypingStop(Function(dynamic data) callback) => _on('typing:stop', callback);
+  VoidCallback onNewMessage(Function(dynamic data) callback) =>
+      _on('message:new', callback);
+  VoidCallback onMessageDelivered(Function(dynamic data) callback) =>
+      _on('message:delivered', callback);
+  VoidCallback onMessageRead(Function(dynamic data) callback) =>
+      _on('message:read', callback);
+  VoidCallback onMessageUnsent(Function(dynamic data) callback) =>
+      _on('message:unsent', callback);
+  VoidCallback onMessageReaction(Function(dynamic data) callback) =>
+      _on('message:reaction', callback);
+  VoidCallback onUserOnline(Function(dynamic data) callback) =>
+      _on('presence:user_online', callback);
+  VoidCallback onUserOffline(Function(dynamic data) callback) =>
+      _on('presence:user_offline', callback);
+  VoidCallback onTypingStart(Function(dynamic data) callback) =>
+      _on('typing:start', callback);
+  VoidCallback onTypingStop(Function(dynamic data) callback) =>
+      _on('typing:stop', callback);
+
+  void emit(String event, dynamic data) {
+    if (_socket != null && _isConnected) {
+      _socket?.emit(event, data);
+    }
+  }
+
+  VoidCallback on(String event, Function(dynamic data) callback) =>
+      _on(event, callback);
 
   void reconnect() {
     if (_lastToken != null && _lastToken!.isNotEmpty) {

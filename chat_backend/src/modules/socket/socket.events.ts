@@ -23,4 +23,14 @@ export const SOCKET_EVENTS = {
   USER_ONLINE: 'presence:user_online',
   USER_OFFLINE: 'presence:user_offline',
   PRESENCE_QUERY: 'presence:query',
+
+  // LiveKit Group & 1-1 Call Signaling
+  CALL_INITIATE: 'call:initiate',
+  CALL_INCOMING: 'call:incoming',
+  CALL_ACCEPT: 'call:accept',
+  CALL_ACCEPTED: 'call:accepted',
+  CALL_REJECT: 'call:reject',
+  CALL_REJECTED: 'call:rejected',
+  CALL_END: 'call:end',
+  CALL_ENDED: 'call:ended',
 };

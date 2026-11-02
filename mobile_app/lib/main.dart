@@ -11,6 +11,8 @@ import 'data/repositories/auth_repository.dart';
 import 'data/repositories/chat_repository.dart';
 import 'data/services/api_client.dart';
 import 'data/services/auth_service.dart';
+import 'data/services/call_service.dart';
+import 'data/services/chat_api_service.dart';
 import 'data/services/fcm_service.dart';
 import 'data/services/media_service.dart';
 import 'data/services/notification_service.dart';
@@ -19,6 +21,8 @@ import 'ui/core/design_system/app_theme.dart';
 import 'ui/core/design_system/theme_provider.dart';
 import 'ui/features/auth/view_models/auth_view_model.dart';
 import 'ui/features/auth/views/login_view.dart';
+import 'ui/features/call/view_models/call_view_model.dart';
+import 'ui/features/call/views/incoming_call_sheet.dart';
 import 'ui/features/chat_list/view_models/chat_list_view_model.dart';
 import 'ui/features/chat_list/views/chat_list_view.dart';
 import 'ui/features/settings/view_models/settings_view_model.dart';
@@ -47,6 +51,8 @@ Future<void> main() async {
   final mediaService = MediaService();
   final apiClient = ApiClient();
   final socketService = authService.socketService;
+  final callService = CallService();
+  final chatApiService = ChatApiService(apiClient: apiClient);
 
   // Initialize FCM device token registration and handlers
   FcmService(apiClient: apiClient).initialize();
@@ -74,13 +80,18 @@ Future<void> main() async {
         Provider<AuthRepository>.value(value: authRepo),
         Provider<ChatRepository>.value(value: chatRepo),
         ChangeNotifierProvider(
-          create: (_) => AuthViewModel(
-            authRepository: authRepo,
-            chatRepository: chatRepo,
-          ),
+          create: (_) =>
+              AuthViewModel(authRepository: authRepo, chatRepository: chatRepo),
         ),
         ChangeNotifierProvider(
           create: (_) => ChatListViewModel(chatRepository: chatRepo),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CallViewModel(
+            callService: callService,
+            chatApiService: chatApiService,
+            socketService: socketService,
+          ),
         ),
         ChangeNotifierProxyProvider2<
           StorageService,
@@ -123,6 +134,15 @@ class MinimalChatApp extends StatelessWidget {
             accentColor: themeProvider.accentColor,
           ),
           themeMode: themeProvider.themeMode,
+          builder: (context, routerChild) {
+            final incoming = context.watch<CallViewModel>().incomingCall;
+            return Stack(
+              children: [
+                ?routerChild,
+                if (incoming != null) IncomingCallOverlay(call: incoming),
+              ],
+            );
+          },
           home: Consumer<AuthViewModel>(
             builder: (context, authVM, _) {
               return AnimatedSwitcher(
@@ -135,8 +155,8 @@ class MinimalChatApp extends StatelessWidget {
                         onComplete: authVM.completeInitialization,
                       )
                     : (authVM.isAuthenticated
-                        ? const ChatListView(key: ValueKey('chat_list_view'))
-                        : const LoginView(key: ValueKey('login_view'))),
+                          ? const ChatListView(key: ValueKey('chat_list_view'))
+                          : const LoginView(key: ValueKey('login_view'))),
               );
             },
           ),

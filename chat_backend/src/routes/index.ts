@@ -4,6 +4,7 @@ import userRoutes from '../modules/user/user.routes.js';
 import chatRoutes from '../modules/chat/chat.routes.js';
 import messageRoutes from '../modules/message/message.routes.js';
 import mediaRoutes from '../modules/media/media.routes.js';
+import callRoutes from '../modules/call/call.routes.js';
 
 const apiRouter = Router();
 
@@ -19,6 +20,7 @@ apiRouter.get('/status', (_req, res) => {
       chats: '/api/chats',
       messages: '/api/messages',
       media: '/api/media',
+      calls: '/api/calls',
     },
   });
 });
@@ -29,6 +31,7 @@ apiRouter.use('/users', userRoutes);
 apiRouter.use('/chats', chatRoutes);
 apiRouter.use('/messages', messageRoutes);
 apiRouter.use('/media', mediaRoutes);
+apiRouter.use('/calls', callRoutes);
 
 export default apiRouter;
 

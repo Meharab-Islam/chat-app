@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+
 import '../../../../data/models/message_model.dart';
 import '../../../../data/services/media_service.dart';
 import '../../forward/views/forward_bottom_sheet.dart';
@@ -51,14 +52,18 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
     setState(() => _isSaving = true);
 
     final mediaService = context.read<MediaService>();
-    final success = await mediaService.saveVideoToGallery(widget.message.mediaUrl!);
+    final success = await mediaService.saveVideoToGallery(
+      widget.message.mediaUrl!,
+    );
 
     if (mounted) {
       setState(() => _isSaving = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            success ? 'Video saved to gallery!' : 'Failed to save video to gallery.',
+            success
+                ? 'Video saved to gallery!'
+                : 'Failed to save video to gallery.',
           ),
           behavior: SnackBarBehavior.floating,
         ),
@@ -103,10 +108,7 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
                 aspectRatio: _controller.value.aspectRatio,
                 child: Stack(
                   alignment: Alignment.bottomCenter,
-                  children: [
-                    VideoPlayer(_controller),
-                    _buildControls(),
-                  ],
+                  children: [VideoPlayer(_controller), _buildControls()],
                 ),
               )
             : const CircularProgressIndicator(
@@ -155,4 +157,3 @@ class _VideoPlayerViewState extends State<VideoPlayerView> {
     );
   }
 }
-

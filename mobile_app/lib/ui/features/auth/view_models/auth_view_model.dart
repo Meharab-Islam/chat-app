@@ -1,5 +1,7 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
+
 import '../../../../data/models/user_model.dart';
 import '../../../../data/repositories/auth_repository.dart';
 import '../../../../data/repositories/chat_repository.dart';
@@ -11,10 +13,7 @@ class AuthViewModel extends ChangeNotifier {
   String? _errorMessage;
   bool _isInitialized = false;
 
-  AuthViewModel({
-    required this.authRepository,
-    this.chatRepository,
-  });
+  AuthViewModel({required this.authRepository, this.chatRepository});
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
@@ -46,13 +45,11 @@ class AuthViewModel extends ChangeNotifier {
       final err = e.toString();
       if (err.contains('channel-error') ||
           err.contains('MissingPluginException')) {
-        _errorMessage =
-            'Native plugin channel error. Please stop and rebuild the app using "flutter run".';
+        _errorMessage = 'Native plugin channel error. Please stop and rebuild the app using "flutter run".';
       } else if (err.contains('network_error') ||
           err.contains('SocketException') ||
           err.contains('Failed to connect')) {
-        _errorMessage =
-            'Cannot reach backend server. Make sure your server is running on port 5055.';
+        _errorMessage = 'Cannot reach backend server. Make sure your server is running on port 5055.';
       } else {
         _errorMessage = err.replaceAll('Exception: ', '');
       }
@@ -65,7 +62,8 @@ class AuthViewModel extends ChangeNotifier {
     final current = currentUser;
     if (current == null) return;
     try {
-      if (newPathOrUrl.startsWith('http://') || newPathOrUrl.startsWith('https://')) {
+      if (newPathOrUrl.startsWith('http://') ||
+          newPathOrUrl.startsWith('https://')) {
         await authRepository.updateProfile(avatarUrl: newPathOrUrl);
       } else {
         final file = File(newPathOrUrl);

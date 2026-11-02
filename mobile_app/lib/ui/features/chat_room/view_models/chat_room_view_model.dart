@@ -1,14 +1,16 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
-import 'package:image_picker/image_picker.dart';
+
 import '../../../../data/models/message_model.dart';
 import '../../../../data/models/user_model.dart';
 import '../../../../data/repositories/chat_repository.dart';
 import '../../../../data/services/media_service.dart';
-import '../../../../data/services/video_thumbnail_cache.dart';
 import 'chat_room_actions_mixin.dart';
+import 'chat_room_socket_mixin.dart';
 
-class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
+class ChatRoomViewModel extends ChangeNotifier
+    with ChatRoomSocketMixin, ChatRoomActionsMixin {
   @override
   final String conversationId;
   final UserModel peerUser;
@@ -22,8 +24,6 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
   List<MessageModel> _messages = [];
   final List<File> _selectedMedia = [];
   bool _isDownloading = false;
-  bool _isPeerTyping = false;
-  bool _isDisposed = false;
   List<VoidCallback> _socketUnsubscribers = [];
   MessageModel? _replyingTo;
   String _searchQuery = '';
@@ -38,27 +38,31 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
   }) {
     final cached = chatRepository.getMessages(conversationId);
     if (cached.isNotEmpty) {
-      _messages = List<MessageModel>.from(cached)..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      _messages = List<MessageModel>.from(cached)
+        ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
     }
     chatRepository.activeConversationId = conversationId;
     chatRepository.socketService.joinChat(conversationId);
     _loadMessages();
-    _socketUnsubscribers = initChatSocketEvents(
-      messages: _messages,
-      notify: () { if (!_isDisposed) notifyListeners(); },
-      onPeerTyping: (t) { if (!_isDisposed) { _isPeerTyping = t; notifyListeners(); } },
-      onNewMessage: (m) {
-        if (!_isDisposed) {
-          if (!_messages.any((x) => x.id == m.id)) { _messages.insert(0, m); notifyListeners(); }
-          if (m.senderId != currentUserId) chatRepository.markAsRead(conversationId, m.id);
-        }
-      },
-    );
+    _socketUnsubscribers = subscribeSocketEvents();
+  }
+
+  @override
+  List<MessageModel> get messagesList => _messages;
+  @override
+  void reloadMessages() => _loadMessages();
+  @override
+  void clearReplyingTo() => _replyingTo = null;
+
+  @override
+  void setDownloading(bool downloading) {
+    _isDownloading = downloading;
+    if (!isDisposed) notifyListeners();
   }
 
   @override
   void notifyListeners() {
-    if (!_isDisposed) super.notifyListeners();
+    if (!isDisposed) super.notifyListeners();
   }
 
   List<MessageModel> get messages {
@@ -71,23 +75,48 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
 
   List<File> get selectedMedia => List.unmodifiable(_selectedMedia);
   bool get isDownloading => _isDownloading;
-  bool get isPeerTyping => _isPeerTyping;
+  @override
   MessageModel? get replyingTo => _replyingTo;
   bool get isSearching => _isSearching;
   String get searchQuery => _searchQuery;
 
-  void toggleSearch(bool a) { _isSearching = a; if (!a) _searchQuery = ''; notifyListeners(); }
-  void setSearchQuery(String q) { _searchQuery = q; notifyListeners(); }
-  void setReplyingTo(MessageModel? m) { _replyingTo = m; notifyListeners(); }
-  void removeSelectedMedia(int i) { if (i >= 0 && i < _selectedMedia.length) { _selectedMedia.removeAt(i); notifyListeners(); } }
-  void clearSelectedMedia() { _selectedMedia.clear(); notifyListeners(); }
-  void onTypingChanged(String text) => chatRepository.socketService.emitTyping(conversationId, text.isNotEmpty);
+  void toggleSearch(bool a) {
+    _isSearching = a;
+    if (!a) _searchQuery = '';
+    notifyListeners();
+  }
+
+  void setSearchQuery(String q) {
+    _searchQuery = q;
+    notifyListeners();
+  }
+
+  void setReplyingTo(MessageModel? m) {
+    _replyingTo = m;
+    notifyListeners();
+  }
+
+  void removeSelectedMedia(int i) {
+    if (i >= 0 && i < _selectedMedia.length) {
+      _selectedMedia.removeAt(i);
+      notifyListeners();
+    }
+  }
+
+  void clearSelectedMedia() {
+    _selectedMedia.clear();
+    notifyListeners();
+  }
+
+  void onTypingChanged(String text) =>
+      chatRepository.socketService.emitTyping(conversationId, text.isNotEmpty);
 
   Future<void> _loadMessages() async {
-    if (_isDisposed) return;
+    if (isDisposed) return;
     final msgs = await chatRepository.fetchMessages(conversationId);
-    if (_isDisposed) return;
-    _messages = List<MessageModel>.from(msgs)..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    if (isDisposed) return;
+    _messages = List<MessageModel>.from(msgs)
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
     final unreadPeer = _messages.cast<MessageModel?>().firstWhere(
       (m) => m != null && m.senderId != currentUserId && m.status != 'read',
       orElse: () => null,
@@ -98,6 +127,16 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
     notifyListeners();
   }
 
+  void _updateMsgStatus(String tempId, MessageModel? sMsg, bool failed) {
+    final idx = _messages.indexWhere((m) => m.id == tempId);
+    if (idx != -1 && !isDisposed) {
+      _messages[idx] = failed
+          ? _messages[idx].copyWith(status: 'failed')
+          : (sMsg ?? _messages[idx].copyWith(status: 'sent'));
+      notifyListeners();
+    }
+  }
+
   Future<void> sendTextMessage(String text) async {
     if (text.trim().isEmpty) return;
     onTypingChanged('');
@@ -105,45 +144,35 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
     _replyingTo = null;
 
     final tempId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
-    _messages.insert(0, MessageModel(
-      id: tempId, conversationId: conversationId, senderId: currentUserId,
-      text: text.trim(), status: 'sending', timestamp: DateTime.now(),
-    ));
+    _messages.insert(
+      0,
+      MessageModel(
+        id: tempId,
+        conversationId: conversationId,
+        senderId: currentUserId,
+        text: text.trim(),
+        status: 'sending',
+        timestamp: DateTime.now(),
+      ),
+    );
     notifyListeners();
 
     try {
       final sMsg = await chatRepository.sendMessage(
-        conversationId: conversationId, senderId: currentUserId, text: text.trim(), replyToId: replyId,
+        conversationId: conversationId,
+        senderId: currentUserId,
+        text: text.trim(),
+        replyToId: replyId,
       );
-      final idx = _messages.indexWhere((m) => m.id == tempId);
-      if (idx != -1 && !_isDisposed) {
-        _messages[idx] = sMsg ?? _messages[idx].copyWith(status: 'sent');
-        notifyListeners();
-      }
+      _updateMsgStatus(tempId, sMsg, false);
     } catch (_) {
-      final idx = _messages.indexWhere((m) => m.id == tempId);
-      if (idx != -1 && !_isDisposed) {
-        _messages[idx] = _messages[idx].copyWith(status: 'failed');
-        notifyListeners();
-      }
+      _updateMsgStatus(tempId, null, true);
     }
   }
 
   Future<void> pickMedia() async {
-    try {
-      final picked = await ImagePicker().pickMultipleMedia();
-      if (picked.isNotEmpty && !_isDisposed) {
-        _selectedMedia.addAll(picked.map((x) => File(x.path)));
-        notifyListeners();
-      }
-    } catch (e) {
-      debugPrint('Error picking media: $e');
-    }
-  }
-
-  Future<void> pickMixedMedia() async {
-    final picked = await pickMixedMediaFiles();
-    if (picked.isNotEmpty && !_isDisposed) {
+    final picked = await pickGalleryMedia();
+    if (picked.isNotEmpty && !isDisposed) {
       _selectedMedia.addAll(picked);
       notifyListeners();
     }
@@ -151,7 +180,7 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
 
   Future<void> pickAudio() async {
     final picked = await pickAudioFiles();
-    if (picked.isNotEmpty && !_isDisposed) {
+    if (picked.isNotEmpty && !isDisposed) {
       _selectedMedia.addAll(picked);
       notifyListeners();
     }
@@ -165,82 +194,40 @@ class ChatRoomViewModel extends ChangeNotifier with ChatRoomActionsMixin {
 
     final replyId = _replyingTo?.id;
     _replyingTo = null;
-    final hasVideo = files.any((f) {
-      final l = f.path.toLowerCase();
-      return l.endsWith('.mp4') || l.endsWith('.mov') || l.endsWith('.mkv') || l.endsWith('.webm');
-    });
-    final hasAudio = files.any((f) {
-      final l = f.path.toLowerCase();
-      return l.endsWith('.mp3') || l.endsWith('.wav') || l.endsWith('.m4a') || l.endsWith('.aac') || l.endsWith('.ogg') || l.endsWith('.opus') || l.endsWith('.flac');
-    });
-    final mediaType = hasVideo
-        ? MessageMediaType.video
-        : (hasAudio ? MessageMediaType.audio : MessageMediaType.image);
-
     final tempId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
-    _messages.insert(0, MessageModel(
-      id: tempId, conversationId: conversationId, senderId: currentUserId,
-      text: caption.trim(), status: 'sending', timestamp: DateTime.now(),
-      mediaType: mediaType,
-      attachmentUrls: files.map((f) => f.path).toList(), mediaUrl: files.first.path,
-    ));
+    _messages.insert(
+      0,
+      createOptimisticMediaMessage(
+        tempId: tempId,
+        files: files,
+        caption: caption,
+      ),
+    );
     notifyListeners();
 
     try {
-      final sMsg = await chatRepository.sendMessage(
-        conversationId: conversationId, senderId: currentUserId,
-        text: caption.trim(), fileAttachments: files, replyToId: replyId,
+      final sMsg = await dispatchMediaMessage(
+        files: files,
+        caption: caption,
+        replyToId: replyId,
       );
-      if (sMsg != null && files.isNotEmpty) {
-        if (sMsg.mediaUrl != null) VideoThumbnailCache.registerLocalPath(sMsg.mediaUrl!, files.first.path);
-        for (int i = 0; i < sMsg.attachmentUrls.length && i < files.length; i++) {
-          VideoThumbnailCache.registerLocalPath(sMsg.attachmentUrls[i], files[i].path);
-        }
-      }
-      final idx = _messages.indexWhere((m) => m.id == tempId);
-      if (idx != -1 && !_isDisposed) {
-        _messages[idx] = sMsg ?? _messages[idx].copyWith(status: 'sent');
-        notifyListeners();
-      }
-    } catch (e) {
-      final idx = _messages.indexWhere((m) => m.id == tempId);
-      if (idx != -1 && !_isDisposed) {
-        _messages[idx] = _messages[idx].copyWith(status: 'failed');
-        notifyListeners();
-      }
-    }
-  }
-
-  Future<void> pickAndSendFiles() => pickAndSendOtherFiles(
-        replyToId: _replyingTo?.id, onRefresh: () { if (!_isDisposed) { _replyingTo = null; _loadMessages(); } });
-
-  Future<void> sendVoiceMessage(File audio) => sendVoice(
-        audio, replyToId: _replyingTo?.id, onRefresh: () { if (!_isDisposed) { _replyingTo = null; _loadMessages(); } });
-
-  Future<void> unsendMessage(String id) => unsend(id, _loadMessages);
-  Future<void> deleteForMe(String id) => deleteMessageForMe(id, _loadMessages);
-  Future<void> reactToMessage(String id, String e) => react(id, e, _loadMessages);
-
-  Future<bool> downloadMediaToGallery(MessageModel msg) async {
-    _isDownloading = true;
-    notifyListeners();
-    try {
-      return await downloadToGallery(msg);
-    } finally {
-      if (!_isDisposed) {
-        _isDownloading = false;
-        notifyListeners();
-      }
+      _updateMsgStatus(tempId, sMsg, false);
+    } catch (_) {
+      _updateMsgStatus(tempId, null, true);
     }
   }
 
   @override
   void dispose() {
-    _isDisposed = true;
-    for (final unsub in _socketUnsubscribers) { unsub(); }
+    isDisposed = true;
+    for (final unsub in _socketUnsubscribers) {
+      unsub();
+    }
     _socketUnsubscribers.clear();
     chatRepository.socketService.leaveChat(conversationId);
-    if (chatRepository.activeConversationId == conversationId) chatRepository.activeConversationId = null;
+    if (chatRepository.activeConversationId == conversationId) {
+      chatRepository.activeConversationId = null;
+    }
     super.dispose();
   }
 }

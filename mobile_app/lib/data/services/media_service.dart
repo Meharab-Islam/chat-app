@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:gal/gal.dart';
 import 'package:path_provider/path_provider.dart';
@@ -21,7 +22,8 @@ class MediaService {
   Future<String?> downloadToTempFile(String url, String extension) async {
     try {
       final tempDir = await getTemporaryDirectory();
-      final fileName = 'media_${DateTime.now().millisecondsSinceEpoch}.$extension';
+      final fileName =
+          'media_${DateTime.now().millisecondsSinceEpoch}.$extension';
       final savePath = '${tempDir.path}/$fileName';
 
       await _dio.download(
@@ -66,4 +68,3 @@ class MediaService {
     return false;
   }
 }
-

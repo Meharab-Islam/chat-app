@@ -126,7 +126,82 @@ export const registerSocketHandlers = (io: Server, socket: AuthenticatedSocket) 
     socket.to(`chat:${chatId}`).emit(SOCKET_EVENTS.TYPING_STOP, { chatId, userId });
   });
 
-  // 7. Disconnection
+  // 7. LiveKit Group & 1-to-1 Call Signaling
+  socket.on(
+    SOCKET_EVENTS.CALL_INITIATE,
+    async ({
+      callId,
+      chatId,
+      callType = 'video',
+    }: {
+      callId: string;
+      chatId: string;
+      callType?: 'audio' | 'video';
+    }) => {
+      try {
+        const [caller, chat] = await Promise.all([
+          prisma.user.findUnique({
+            where: { id: userId },
+            select: { id: true, name: true, avatar: true },
+          }),
+          prisma.chat.findUnique({
+            where: { id: chatId },
+            select: { id: true, name: true, isGroup: true },
+          }),
+        ]);
+
+        if (!caller || !chat) return;
+
+        // Broadcast incoming call event to all members in the chat room
+        socket.to(`chat:${chatId}`).emit(SOCKET_EVENTS.CALL_INCOMING, {
+          callId,
+          chatId,
+          caller: {
+            id: caller.id,
+            name: caller.name,
+            avatar: caller.avatar,
+          },
+          callType,
+          isGroup: chat.isGroup,
+          chatName: chat.name || (chat.isGroup ? 'Group Call' : caller.name),
+        });
+
+        logger.info(`Call initiated: [${callId}] in chat [${chatId}] by [${userId}]`);
+      } catch (err) {
+        logger.error('Error handling call initiate:', err);
+      }
+    }
+  );
+
+  socket.on(SOCKET_EVENTS.CALL_ACCEPT, ({ callId, chatId }: { callId: string; chatId: string }) => {
+    socket.to(`chat:${chatId}`).emit(SOCKET_EVENTS.CALL_ACCEPTED, {
+      callId,
+      chatId,
+      userId,
+    });
+  });
+
+  socket.on(
+    SOCKET_EVENTS.CALL_REJECT,
+    ({ callId, chatId, reason }: { callId: string; chatId: string; reason?: string }) => {
+      socket.to(`chat:${chatId}`).emit(SOCKET_EVENTS.CALL_REJECTED, {
+        callId,
+        chatId,
+        userId,
+        reason: reason || 'declined',
+      });
+    }
+  );
+
+  socket.on(SOCKET_EVENTS.CALL_END, ({ callId, chatId }: { callId: string; chatId: string }) => {
+    socket.to(`chat:${chatId}`).emit(SOCKET_EVENTS.CALL_ENDED, {
+      callId,
+      chatId,
+      userId,
+    });
+  });
+
+  // 8. Disconnection
   socket.on(SOCKET_EVENTS.DISCONNECT, () => {
     logger.info(`User disconnected from socket: [${userId}]`);
     PresenceService.setUserOffline(userId);

@@ -1,6 +1,8 @@
 import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import '../design_system/app_colors.dart';
 import '../design_system/app_spacing.dart';
 
@@ -62,9 +64,7 @@ class AppCachedImage extends StatelessWidget {
             Container(
               width: width,
               height: height,
-              color: isDark
-                  ? AppColors.shimmerDarkBase
-                  : AppColors.shimmerBase,
+              color: isDark ? AppColors.shimmerDarkBase : AppColors.shimmerBase,
               child: Center(
                 child: SizedBox(
                   width: 20,

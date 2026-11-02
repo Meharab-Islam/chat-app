@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_typography.dart';
 import '../../../core/widgets/app_cached_image.dart';
@@ -70,8 +71,12 @@ class ProfilePhotoPickerSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Material(
       color: theme.scaffoldBackgroundColor,
@@ -89,7 +94,9 @@ class ProfilePhotoPickerSheet extends StatelessWidget {
                   width: 38.w,
                   height: 4.h,
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+                    color: isDark
+                        ? AppColors.darkDivider
+                        : AppColors.lightDivider,
                     borderRadius: BorderRadius.circular(2.r),
                   ),
                 ),
@@ -113,9 +120,16 @@ class ProfilePhotoPickerSheet extends StatelessWidget {
                     color: theme.colorScheme.primary.withAlpha(20),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.camera_alt_outlined, color: theme.colorScheme.primary, size: 22.r),
+                  child: Icon(
+                    Icons.camera_alt_outlined,
+                    color: theme.colorScheme.primary,
+                    size: 22.r,
+                  ),
                 ),
-                title: Text('Take Photo', style: AppTypography.bodyMedium(textPrimary)),
+                title: Text(
+                  'Take Photo',
+                  style: AppTypography.bodyMedium(textPrimary),
+                ),
                 onTap: () => _pickImage(context, ImageSource.camera),
               ),
               ListTile(
@@ -126,13 +140,23 @@ class ProfilePhotoPickerSheet extends StatelessWidget {
                     color: theme.colorScheme.primary.withAlpha(20),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.photo_library_outlined, color: theme.colorScheme.primary, size: 22.r),
+                  child: Icon(
+                    Icons.photo_library_outlined,
+                    color: theme.colorScheme.primary,
+                    size: 22.r,
+                  ),
                 ),
-                title: Text('Choose from Gallery', style: AppTypography.bodyMedium(textPrimary)),
+                title: Text(
+                  'Choose from Gallery',
+                  style: AppTypography.bodyMedium(textPrimary),
+                ),
                 onTap: () => _pickImage(context, ImageSource.gallery),
               ),
               SizedBox(height: 12.h),
-              Text('CURATED AVATARS', style: AppTypography.caption(textSecondary)),
+              Text(
+                'CURATED AVATARS',
+                style: AppTypography.caption(textSecondary),
+              ),
               SizedBox(height: 10.h),
               SizedBox(
                 height: 52.h,

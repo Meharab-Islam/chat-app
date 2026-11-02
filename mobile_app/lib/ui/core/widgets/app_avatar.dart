@@ -1,6 +1,8 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../data/services/api_client.dart';
 import '../design_system/app_colors.dart';
 import 'app_cached_image.dart';
@@ -25,13 +27,20 @@ class AppAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final avatarSize = size ?? 46.r;
     final initials = name.trim().isNotEmpty
-        ? name.trim().split(' ').map((e) => e.isNotEmpty ? e[0] : '').take(2).join().toUpperCase()
+        ? name
+              .trim()
+              .split(' ')
+              .map((e) => e.isNotEmpty ? e[0] : '')
+              .take(2)
+              .join()
+              .toUpperCase()
         : '?';
 
     final resolvedUrl = ApiClient.resolveUrl(imageUrl);
     Widget avatarWidget;
     if (resolvedUrl.isNotEmpty) {
-      if (resolvedUrl.startsWith('http://') || resolvedUrl.startsWith('https://')) {
+      if (resolvedUrl.startsWith('http://') ||
+          resolvedUrl.startsWith('https://')) {
         avatarWidget = AppCachedImage(
           imageUrl: resolvedUrl,
           width: avatarSize,

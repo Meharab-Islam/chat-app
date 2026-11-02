@@ -1,6 +1,8 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../data/models/message_model.dart';
 import '../../../../data/services/file_manager_service.dart';
 import '../../../core/design_system/app_spacing.dart';
@@ -34,14 +36,21 @@ class _FileMessageWidgetState extends State<FileMessageWidget> {
   Future<void> _checkExistingFile() async {
     final fileName = _getFileName();
     if (fileName.isNotEmpty) {
-      final f = await _fileService.downloadFile(url: widget.message.mediaUrl ?? '', fileName: fileName);
+      final f = await _fileService.downloadFile(
+        url: widget.message.mediaUrl ?? '',
+        fileName: fileName,
+      );
       if (mounted) setState(() => _downloadedFile = f);
     }
   }
 
   String _getFileName() {
-    if (widget.message.fileName?.isNotEmpty == true) return widget.message.fileName!;
-    if (widget.message.mediaUrl != null) return widget.message.mediaUrl!.split('/').last;
+    if (widget.message.fileName?.isNotEmpty == true) {
+      return widget.message.fileName!;
+    }
+    if (widget.message.mediaUrl != null) {
+      return widget.message.mediaUrl!.split('/').last;
+    }
     return 'file';
   }
 
@@ -86,7 +95,8 @@ class _FileMessageWidgetState extends State<FileMessageWidget> {
     final fileName = _getFileName();
     final fileSizeStr = _fileService.formatBytes(widget.message.fileSize ?? 0);
     final isDownloaded = _downloadedFile != null;
-    final isApk = type == MessageMediaType.apk || fileName.toLowerCase().endsWith('.apk');
+    final isApk =
+        type == MessageMediaType.apk || fileName.toLowerCase().endsWith('.apk');
 
     Color iconBg = const Color(0xFF3B82F6);
     IconData icon = Icons.insert_drive_file_rounded;
@@ -96,11 +106,13 @@ class _FileMessageWidgetState extends State<FileMessageWidget> {
       iconBg = const Color(0xFF10B981);
       icon = Icons.android_rounded;
       tag = 'APK';
-    } else if (type == MessageMediaType.pdf || fileName.toLowerCase().endsWith('.pdf')) {
+    } else if (type == MessageMediaType.pdf ||
+        fileName.toLowerCase().endsWith('.pdf')) {
       iconBg = const Color(0xFFEF4444);
       icon = Icons.picture_as_pdf_rounded;
       tag = 'PDF';
-    } else if (type == MessageMediaType.zip || fileName.toLowerCase().endsWith('.zip')) {
+    } else if (type == MessageMediaType.zip ||
+        fileName.toLowerCase().endsWith('.zip')) {
       iconBg = const Color(0xFFF59E0B);
       icon = Icons.folder_zip_rounded;
       tag = 'ZIP';
@@ -152,7 +164,10 @@ class _FileMessageWidgetState extends State<FileMessageWidget> {
                   Row(
                     children: [
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 5.w,
+                          vertical: 1.h,
+                        ),
                         decoration: BoxDecoration(
                           color: iconBg.withAlpha(40),
                           borderRadius: BorderRadius.circular(4.r),
@@ -169,7 +184,10 @@ class _FileMessageWidgetState extends State<FileMessageWidget> {
                       SizedBox(width: 6.w),
                       Text(
                         fileSizeStr,
-                        style: TextStyle(fontSize: 11.sp, color: fg.withAlpha(180)),
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          color: fg.withAlpha(180),
+                        ),
                       ),
                     ],
                   ),
@@ -198,7 +216,9 @@ class _FileMessageWidgetState extends State<FileMessageWidget> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      isApk ? Icons.install_mobile_rounded : Icons.open_in_new_rounded,
+                      isApk
+                          ? Icons.install_mobile_rounded
+                          : Icons.open_in_new_rounded,
                       size: 13.r,
                       color: Colors.white,
                     ),
@@ -221,7 +241,11 @@ class _FileMessageWidgetState extends State<FileMessageWidget> {
                   color: fg.withAlpha(30),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.arrow_downward_rounded, size: 16.r, color: fg),
+                child: Icon(
+                  Icons.arrow_downward_rounded,
+                  size: 16.r,
+                  color: fg,
+                ),
               ),
           ],
         ),

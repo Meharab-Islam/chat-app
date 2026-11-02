@@ -25,12 +25,25 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _animController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
-    _pulseController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1800))..repeat(reverse: true);
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat(reverse: true);
 
-    _scaleAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOutBack));
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animController, curve: Curves.easeIn));
-    _pulseAnimation = Tween<double>(begin: 0.85, end: 1.15).animate(CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut));
+    _scaleAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutBack),
+    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeIn));
+    _pulseAnimation = Tween<double>(begin: 0.85, end: 1.15).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
 
     _animController.forward();
     _checkAuth();
@@ -77,8 +90,12 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final primary = theme.colorScheme.primary;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Scaffold(
       body: Container(
@@ -140,7 +157,11 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                           ),
                         ],
                       ),
-                      child: Icon(Icons.forum_rounded, size: 44.r, color: Colors.white),
+                      child: Icon(
+                        Icons.forum_rounded,
+                        size: 44.r,
+                        color: Colors.white,
+                      ),
                     ),
                   ],
                 ),
@@ -161,7 +182,8 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                     SizedBox(height: 6.h),
                     Text(
                       'Fast, Private & Secure Messaging',
-                      style: AppTypography.bodyMedium(textSecondary).copyWith(fontSize: 13.sp),
+                      style: AppTypography.bodyMedium(textSecondary)
+                          .copyWith(fontSize: 13.sp),
                     ),
                   ],
                 ),
@@ -177,7 +199,9 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                         borderRadius: BorderRadius.circular(10.r),
                         child: LinearProgressIndicator(
                           minHeight: 3.5.h,
-                          backgroundColor: isDark ? Colors.white.withAlpha(20) : Colors.black.withAlpha(12),
+                          backgroundColor: isDark
+                              ? Colors.white.withAlpha(20)
+                              : Colors.black.withAlpha(12),
                           valueColor: AlwaysStoppedAnimation<Color>(primary),
                         ),
                       ),
@@ -185,13 +209,21 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                     SizedBox(height: 12.h),
                     Text(
                       _statusText,
-                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500, color: textSecondary),
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
+                        color: textSecondary,
+                      ),
                     ),
                     SizedBox(height: 20.h),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.lock_outline_rounded, size: 13.r, color: textSecondary.withAlpha(180)),
+                        Icon(
+                          Icons.lock_outline_rounded,
+                          size: 13.r,
+                          color: textSecondary.withAlpha(180),
+                        ),
                         SizedBox(width: 5.w),
                         Text(
                           'End-to-End Encrypted',

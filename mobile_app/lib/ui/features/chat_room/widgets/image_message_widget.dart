@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../data/models/message_model.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/widgets/app_cached_image.dart';
@@ -37,7 +38,8 @@ class ImageMessageWidget extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => ImageViewerView(message: message.copyWith(mediaUrl: u)),
+                  builder: (_) =>
+                      ImageViewerView(message: message.copyWith(mediaUrl: u)),
                 ),
               );
             },
@@ -63,7 +65,8 @@ class ImageMessageWidget extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => ImageViewerView(message: message.copyWith(mediaUrl: url)),
+                  builder: (_) =>
+                      ImageViewerView(message: message.copyWith(mediaUrl: url)),
                 ),
               );
             },

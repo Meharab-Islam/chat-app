@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,14 +43,22 @@ class ApiClient {
   Future<dynamic> post(String endpoint, Map<String, dynamic> body) async {
     final headers = await _headers();
     final uri = Uri.parse('$baseUrl$endpoint');
-    final response = await http.post(uri, headers: headers, body: jsonEncode(body));
+    final response = await http.post(
+      uri,
+      headers: headers,
+      body: jsonEncode(body),
+    );
     return _handleResponse(response);
   }
 
   Future<dynamic> put(String endpoint, Map<String, dynamic> body) async {
     final headers = await _headers();
     final uri = Uri.parse('$baseUrl$endpoint');
-    final response = await http.put(uri, headers: headers, body: jsonEncode(body));
+    final response = await http.put(
+      uri,
+      headers: headers,
+      body: jsonEncode(body),
+    );
     return _handleResponse(response);
   }
 
@@ -77,7 +86,10 @@ class ApiClient {
     request.fields.addAll(fields);
 
     for (final file in files) {
-      final multipartFile = await http.MultipartFile.fromPath(fileFieldName, file.path);
+      final multipartFile = await http.MultipartFile.fromPath(
+        fileFieldName,
+        file.path,
+      );
       request.files.add(multipartFile);
     }
 
@@ -93,7 +105,8 @@ class ApiClient {
       return decoded['data'] ?? decoded;
     }
     final errorBody = jsonDecode(response.body);
-    throw Exception(errorBody['message'] ?? 'API error: ${response.statusCode}');
+    throw Exception(
+      errorBody['message'] ?? 'API error: ${response.statusCode}',
+    );
   }
 }
-

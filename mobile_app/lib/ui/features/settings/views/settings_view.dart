@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/models/user_model.dart';
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
@@ -20,8 +21,12 @@ class SettingsView extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final primary = theme.colorScheme.primary;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     final authVM = context.watch<AuthViewModel>();
     final settingsVM = context.watch<SettingsViewModel>();
@@ -37,7 +42,14 @@ class SettingsView extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
           children: [
             if (user != null) ...[
-              _buildProfileCard(context, user, isDark, textPrimary, textSecondary, primary),
+              _buildProfileCard(
+                context,
+                user,
+                isDark,
+                textPrimary,
+                textSecondary,
+                primary,
+              ),
               SizedBox(height: 24.h),
             ],
             Text('APPEARANCE', style: AppTypography.caption(textSecondary)),
@@ -51,9 +63,18 @@ class SettingsView extends StatelessWidget {
               onSelected: settingsVM.setAccentTheme,
             ),
             SizedBox(height: 28.h),
-            Text('MEDIA & STORAGE', style: AppTypography.caption(textSecondary)),
+            Text(
+              'MEDIA & STORAGE',
+              style: AppTypography.caption(textSecondary),
+            ),
             SizedBox(height: 8.h),
-            _buildAutoSaveTile(context, settingsVM, isDark, textPrimary, textSecondary),
+            _buildAutoSaveTile(
+              context,
+              settingsVM,
+              isDark,
+              textPrimary,
+              textSecondary,
+            ),
             SizedBox(height: 36.h),
             _buildSignOutButton(context, authVM),
           ],
@@ -83,7 +104,11 @@ class SettingsView extends StatelessWidget {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
-                AppAvatar(imageUrl: user.avatarUrl, name: user.name, size: 58.r),
+                AppAvatar(
+                  imageUrl: user.avatarUrl,
+                  name: user.name,
+                  size: 58.r,
+                ),
                 Positioned(
                   right: -2,
                   bottom: -2,
@@ -93,11 +118,17 @@ class SettingsView extends StatelessWidget {
                       color: primary,
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: isDark ? AppColors.darkCard : AppColors.lightCard,
+                        color: isDark
+                            ? AppColors.darkCard
+                            : AppColors.lightCard,
                         width: 2.r,
                       ),
                     ),
-                    child: Icon(Icons.camera_alt_rounded, color: Colors.white, size: 12.r),
+                    child: Icon(
+                      Icons.camera_alt_rounded,
+                      color: Colors.white,
+                      size: 12.r,
+                    ),
                   ),
                 ),
               ],
@@ -111,10 +142,17 @@ class SettingsView extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(user.name, style: AppTypography.headingSmall(textPrimary)),
+                      child: Text(
+                        user.name,
+                        style: AppTypography.headingSmall(textPrimary),
+                      ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.edit_outlined, size: 18.r, color: primary),
+                      icon: Icon(
+                        Icons.edit_outlined,
+                        size: 18.r,
+                        color: primary,
+                      ),
                       tooltip: 'Edit Profile',
                       onPressed: () => EditProfileDialog.show(context),
                     ),
@@ -145,30 +183,57 @@ class SettingsView extends StatelessWidget {
     );
   }
 
-  Widget _buildThemeModeSelector(BuildContext context, SettingsViewModel vm, bool isDark) {
+  Widget _buildThemeModeSelector(
+    BuildContext context,
+    SettingsViewModel vm,
+    bool isDark,
+  ) {
     return SegmentedButton<ThemeMode>(
       segments: const [
-        ButtonSegment(value: ThemeMode.light, icon: Icon(Icons.light_mode_outlined), label: Text('Light')),
-        ButtonSegment(value: ThemeMode.dark, icon: Icon(Icons.dark_mode_outlined), label: Text('Dark')),
-        ButtonSegment(value: ThemeMode.system, icon: Icon(Icons.brightness_auto_outlined), label: Text('Auto')),
+        ButtonSegment(
+          value: ThemeMode.light,
+          icon: Icon(Icons.light_mode_outlined),
+          label: Text('Light'),
+        ),
+        ButtonSegment(
+          value: ThemeMode.dark,
+          icon: Icon(Icons.dark_mode_outlined),
+          label: Text('Dark'),
+        ),
+        ButtonSegment(
+          value: ThemeMode.system,
+          icon: Icon(Icons.brightness_auto_outlined),
+          label: Text('Auto'),
+        ),
       ],
       selected: {vm.themeMode},
       onSelectionChanged: (set) => vm.setThemeMode(set.first),
       style: ButtonStyle(
-        side: WidgetStateProperty.all(BorderSide(
-          color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
-        )),
+        side: WidgetStateProperty.all(
+          BorderSide(
+            color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildAutoSaveTile(BuildContext context, SettingsViewModel vm, bool isDark, Color textPrimary, Color textSecondary) {
+  Widget _buildAutoSaveTile(
+    BuildContext context,
+    SettingsViewModel vm,
+    bool isDark,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
     return Material(
       color: isDark ? AppColors.darkCard : AppColors.lightCard,
       borderRadius: AppSpacing.radiusMd,
       clipBehavior: Clip.antiAlias,
       child: SwitchListTile(
-        title: Text('Auto-save to Gallery', style: AppTypography.bodyMedium(textPrimary)),
+        title: Text(
+          'Auto-save to Gallery',
+          style: AppTypography.bodyMedium(textPrimary),
+        ),
         subtitle: Text(
           'Save incoming photos and videos automatically to device photos.',
           style: AppTypography.caption(textSecondary),
@@ -184,7 +249,10 @@ class SettingsView extends StatelessWidget {
     return Center(
       child: TextButton.icon(
         icon: const Icon(Icons.logout_rounded, color: AppColors.danger),
-        label: const Text('Sign Out', style: TextStyle(color: AppColors.danger)),
+        label: const Text(
+          'Sign Out',
+          style: TextStyle(color: AppColors.danger),
+        ),
         onPressed: () {
           authVM.signOut();
           Navigator.popUntil(context, (route) => route.isFirst);

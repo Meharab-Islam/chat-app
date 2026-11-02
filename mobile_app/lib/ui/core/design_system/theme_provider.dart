@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'app_colors.dart';
 
 class ThemeProvider extends ChangeNotifier {
@@ -27,11 +28,15 @@ class ThemeProvider extends ChangeNotifier {
 
   void _loadSettings() {
     final modeIndex = prefs.getInt(_themeModeKey);
-    if (modeIndex != null && modeIndex >= 0 && modeIndex < ThemeMode.values.length) {
+    if (modeIndex != null &&
+        modeIndex >= 0 &&
+        modeIndex < ThemeMode.values.length) {
       _themeMode = ThemeMode.values[modeIndex];
     }
     final accentIndex = prefs.getInt(_accentIndexKey);
-    if (accentIndex != null && accentIndex >= 0 && accentIndex < AppAccentTheme.values.length) {
+    if (accentIndex != null &&
+        accentIndex >= 0 &&
+        accentIndex < AppAccentTheme.values.length) {
       _accent = AppAccentTheme.values[accentIndex];
     }
   }

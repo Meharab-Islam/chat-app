@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useChat } from '../context/ChatContext';
+import { useCall } from '../context/CallContext';
 import { resolveMediaUrl } from '../services/api';
 import { EditGroupModal } from './EditGroupModal';
-import { Search, X, Users, Settings } from 'lucide-react';
+import { Search, X, Users, Settings, Phone, Video } from 'lucide-react';
 
 interface Props {
   isSearching: boolean;
@@ -18,6 +19,7 @@ export const ChatHeader: React.FC<Props> = ({
   onSearchChange,
 }) => {
   const { activeChat, isPeerTyping } = useChat();
+  const { startCall } = useCall();
   const [isEditGroupOpen, setIsEditGroupOpen] = useState(false);
 
   if (!activeChat) return null;
@@ -96,7 +98,21 @@ export const ChatHeader: React.FC<Props> = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2">
+              <button
+                onClick={() => startCall(activeChat.id, 'audio', title || 'Call', !isDirect)}
+                title="Start Audio Call"
+                className="p-2 rounded-xl text-zinc-400 hover:text-emerald-400 hover:bg-zinc-800 transition"
+              >
+                <Phone className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => startCall(activeChat.id, 'video', title || 'Call', !isDirect)}
+                title="Start Video Call"
+                className="p-2 rounded-xl text-zinc-400 hover:text-indigo-400 hover:bg-zinc-800 transition"
+              >
+                <Video className="w-5 h-5" />
+              </button>
               {!isDirect && (
                 <button
                   onClick={() => setIsEditGroupOpen(true)}

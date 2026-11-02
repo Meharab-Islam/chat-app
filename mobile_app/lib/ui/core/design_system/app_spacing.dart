@@ -15,9 +15,12 @@ class AppSpacing {
 
   // Insets
   static EdgeInsets get screenPadding => EdgeInsets.symmetric(horizontal: 16.w);
-  static EdgeInsets get listPadding => EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h);
-  static EdgeInsets get bubblePadding => EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h);
-  static EdgeInsets get inputPadding => EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h);
+  static EdgeInsets get listPadding =>
+      EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h);
+  static EdgeInsets get bubblePadding =>
+      EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h);
+  static EdgeInsets get inputPadding =>
+      EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h);
 
   // Border Radii
   static BorderRadius get radiusXs => BorderRadius.circular(6.r);
@@ -37,4 +40,3 @@ class AppSpacing {
   static double get avatarMd => 46.r;
   static double get avatarLg => 64.r;
 }
-

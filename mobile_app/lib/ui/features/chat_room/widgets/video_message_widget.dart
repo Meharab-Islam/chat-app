@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../data/models/message_model.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../media_viewer/views/video_player_view.dart';
@@ -58,7 +59,10 @@ class VideoMessageWidget extends StatelessWidget {
                   bottom: 8.h,
                   left: 8.w,
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 6.w,
+                      vertical: 2.h,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black.withAlpha(160),
                       borderRadius: AppSpacing.radiusXs,
@@ -100,4 +104,3 @@ class VideoMessageWidget extends StatelessWidget {
     );
   }
 }
-

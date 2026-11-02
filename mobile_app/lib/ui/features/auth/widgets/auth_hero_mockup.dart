@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/widgets/app_avatar.dart';
@@ -14,9 +15,15 @@ class AuthHeroMockup extends StatelessWidget {
     final primary = theme.colorScheme.primary;
 
     final cardBg = isDark ? const Color(0xFF16181D) : Colors.white;
-    final borderColor = isDark ? const Color(0xFF262930) : const Color(0xFFE5E7EB);
-    final textCol = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSub = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final borderColor = isDark
+        ? const Color(0xFF262930)
+        : const Color(0xFFE5E7EB);
+    final textCol = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSub = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return SizedBox(
       height: 220.h,
@@ -63,18 +70,38 @@ class AuthHeroMockup extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Sarah Connor', style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w600, color: textCol)),
-                        Text('Sent 4K video clip 🎬', style: TextStyle(fontSize: 10.sp, color: textSub)),
+                        Text(
+                          'Sarah Connor',
+                          style: TextStyle(
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w600,
+                            color: textCol,
+                          ),
+                        ),
+                        Text(
+                          'Sent 4K video clip 🎬',
+                          style: TextStyle(fontSize: 10.sp, color: textSub),
+                        ),
                       ],
                     ),
                     SizedBox(width: 6.w),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 6.w,
+                        vertical: 2.h,
+                      ),
                       decoration: BoxDecoration(
                         color: primary.withAlpha(25),
                         borderRadius: AppSpacing.radiusXs,
                       ),
-                      child: Text('0:30', style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.bold, color: primary)),
+                      child: Text(
+                        '0:30',
+                        style: TextStyle(
+                          fontSize: 9.sp,
+                          fontWeight: FontWeight.bold,
+                          color: primary,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -109,14 +136,26 @@ class AuthHeroMockup extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.reply_rounded, size: 14.r, color: Colors.white70),
+                    Icon(
+                      Icons.reply_rounded,
+                      size: 14.r,
+                      color: Colors.white70,
+                    ),
                     SizedBox(width: 5.w),
                     Text(
                       'Forwarded instant • 0s lag',
-                      style: TextStyle(color: Colors.white, fontSize: 11.sp, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     SizedBox(width: 6.w),
-                    Icon(Icons.done_all_rounded, size: 14.r, color: Colors.white),
+                    Icon(
+                      Icons.done_all_rounded,
+                      size: 14.r,
+                      color: Colors.white,
+                    ),
                   ],
                 ),
               ),
@@ -144,10 +183,18 @@ class AuthHeroMockup extends StatelessWidget {
                   SizedBox(width: 7.w),
                   Text(
                     'Auto-saved to Gallery',
-                    style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w600, color: textCol),
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w600,
+                      color: textCol,
+                    ),
                   ),
                   SizedBox(width: 6.w),
-                  Icon(Icons.photo_library_outlined, size: 13.r, color: AppColors.success),
+                  Icon(
+                    Icons.photo_library_outlined,
+                    size: 13.r,
+                    color: AppColors.success,
+                  ),
                 ],
               ),
             ),
@@ -180,4 +227,3 @@ class AuthHeroMockup extends StatelessWidget {
     );
   }
 }
-

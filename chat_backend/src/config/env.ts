@@ -27,4 +27,9 @@ export const ENV = {
   MAX_FILE_SIZE_MB: parseInt(process.env.MAX_FILE_SIZE_MB || '500', 10),
   MAX_FILES_PER_REQUEST: parseInt(process.env.MAX_FILES_PER_REQUEST || '10', 10),
   UPLOAD_DIR: process.env.UPLOAD_DIR || 'uploads',
+
+  // LiveKit Group Calling
+  LIVEKIT_URL: process.env.LIVEKIT_URL || 'ws://107.174.137.29:7880',
+  LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY || 'devkey',
+  LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET || 'secret',
 };

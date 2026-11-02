@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:video_player/video_player.dart';
 
@@ -79,8 +80,11 @@ class VideoThumbnailCache {
       }
 
       final localPath = _localPaths[url];
-      final isLocal = (localPath != null && File(localPath).existsSync()) ||
-          (!url.startsWith('http://') && !url.startsWith('https://') && File(url).existsSync());
+      final isLocal =
+          (localPath != null && File(localPath).existsSync()) ||
+          (!url.startsWith('http://') &&
+              !url.startsWith('https://') &&
+              File(url).existsSync());
 
       final filePath = isLocal ? (localPath ?? url) : null;
       final ctrl = filePath != null
@@ -119,4 +123,3 @@ class VideoThumbnailCache {
     _lruList.clear();
   }
 }
-

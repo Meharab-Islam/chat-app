@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../models/user_model.dart';
 
 class StorageService {
@@ -50,8 +52,11 @@ class StorageService {
   }
 
   String? getCachedConversations() => prefs.getString('cached_conversations');
-  Future<void> saveCachedConversations(String raw) => prefs.setString('cached_conversations', raw);
+  Future<void> saveCachedConversations(String raw) =>
+      prefs.setString('cached_conversations', raw);
 
-  String? getCachedMessages(String convId) => prefs.getString('cached_msgs_$convId');
-  Future<void> saveCachedMessages(String convId, String raw) => prefs.setString('cached_msgs_$convId', raw);
+  String? getCachedMessages(String convId) =>
+      prefs.getString('cached_msgs_$convId');
+  Future<void> saveCachedMessages(String convId, String raw) =>
+      prefs.setString('cached_msgs_$convId', raw);
 }

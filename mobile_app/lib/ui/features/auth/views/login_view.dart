@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/design_system/app_typography.dart';
@@ -17,8 +18,12 @@ class LoginView extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final primary = theme.colorScheme.primary;
 
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Scaffold(
       body: SafeArea(
@@ -34,19 +39,16 @@ class LoginView extends StatelessWidget {
               SizedBox(height: 16.h),
               Text(
                 'Connect In Flow',
-                style: AppTypography.headingLarge(textPrimary).copyWith(
-                  fontSize: 28.sp,
-                  letterSpacing: -0.8,
-                ),
+                style: AppTypography.headingLarge(textPrimary)
+                    .copyWith(fontSize: 28.sp, letterSpacing: -0.8),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 8.h),
               Text(
                 'Silky smooth chatting, dynamic themes,\nand instant media sharing without redownloads.',
                 textAlign: TextAlign.center,
-                style: AppTypography.bodyMedium(textSecondary).copyWith(
-                  height: 1.4,
-                ),
+                style: AppTypography.bodyMedium(textSecondary)
+                    .copyWith(height: 1.4),
               ),
               SizedBox(height: 16.h),
               _buildFeatureChips(isDark, primary),

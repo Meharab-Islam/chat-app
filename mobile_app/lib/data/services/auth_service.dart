@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../models/user_model.dart';
 import 'api_client.dart';
 import 'socket_service.dart';
@@ -83,11 +85,7 @@ class AuthService {
   }
 
   Future<UserModel?> _verifyWithBackend(String idToken) async {
-    final urlsToTry = [
-      resolvedBaseUrl,
-      emulatorBaseUrl,
-      localhostBaseUrl,
-    ];
+    final urlsToTry = [resolvedBaseUrl, emulatorBaseUrl, localhostBaseUrl];
 
     for (final base in urlsToTry) {
       try {
@@ -124,11 +122,15 @@ class AuthService {
             id: userMap['id'] ?? 'usr_google',
             name: userMap['name'] ?? 'Google User',
             email: userMap['email'] ?? '',
-            avatarUrl: ApiClient.resolveUrl(userMap['avatarUrl'] as String? ?? ''),
+            avatarUrl: ApiClient.resolveUrl(
+              userMap['avatarUrl'] as String? ?? '',
+            ),
             isOnline: true,
           );
         } else {
-          debugPrint('Backend response error [${response.statusCode}] from $base: ${response.body}');
+          debugPrint(
+            'Backend response error [${response.statusCode}] from $base: ${response.body}',
+          );
         }
       } catch (err) {
         debugPrint('Connection attempt failed to $base: $err');
@@ -155,10 +157,7 @@ class AuthService {
     _currentUser = user;
     if (user != null && accessToken != null && accessToken.isNotEmpty) {
       final socketHost = resolvedBaseUrl.replaceAll('/api', '');
-      socketService.connect(
-        accessToken: accessToken,
-        socketUrl: socketHost,
-      );
+      socketService.connect(accessToken: accessToken, socketUrl: socketHost);
     }
   }
 
@@ -195,7 +194,9 @@ class AuthService {
     );
     if (data is Map<String, dynamic>) {
       final rawUrl = data['avatarUrl'] as String? ?? '';
-      _currentUser = _currentUser?.copyWith(avatarUrl: ApiClient.resolveUrl(rawUrl));
+      _currentUser = _currentUser?.copyWith(
+        avatarUrl: ApiClient.resolveUrl(rawUrl),
+      );
     }
     return _currentUser!;
   }

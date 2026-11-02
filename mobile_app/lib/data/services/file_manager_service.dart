@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:open_filex/open_filex.dart';
@@ -62,9 +63,11 @@ class FileManagerService {
       if (result.type != ResultType.done && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result.message.isNotEmpty
-                ? result.message
-                : 'Could not open file'),
+            content: Text(
+              result.message.isNotEmpty
+                  ? result.message
+                  : 'Could not open file',
+            ),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -112,4 +115,3 @@ class FileManagerService {
     }
   }
 }
-

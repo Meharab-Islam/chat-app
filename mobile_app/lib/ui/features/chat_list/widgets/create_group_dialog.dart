@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/models/user_model.dart';
 import '../../../../data/repositories/chat_repository.dart';
 import '../../../core/design_system/app_colors.dart';
@@ -72,7 +73,10 @@ class _CreateGroupDialogState extends State<CreateGroupDialog> {
 
     setState(() => _isCreating = true);
     final repo = context.read<ChatRepository>();
-    final groupChat = await repo.createGroupChat(name, _selectedUserIds.toList());
+    final groupChat = await repo.createGroupChat(
+      name,
+      _selectedUserIds.toList(),
+    );
 
     if (mounted) {
       setState(() => _isCreating = false);
@@ -85,7 +89,9 @@ class _CreateGroupDialogState extends State<CreateGroupDialog> {
               conversationId: groupChat.id,
               peerUser: groupChat.peerUser,
               isGroup: true,
-              memberCount: groupChat.memberCount > 0 ? groupChat.memberCount : _selectedUserIds.length + 1,
+              memberCount: groupChat.memberCount > 0
+                  ? groupChat.memberCount
+                  : _selectedUserIds.length + 1,
             ),
           ),
         );
@@ -98,13 +104,20 @@ class _CreateGroupDialogState extends State<CreateGroupDialog> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final primary = theme.colorScheme.primary;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return AlertDialog(
       backgroundColor: theme.scaffoldBackgroundColor,
       shape: RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
-      title: Text('New Group Chat', style: AppTypography.headingSmall(textPrimary)),
+      title: Text(
+        'New Group Chat',
+        style: AppTypography.headingSmall(textPrimary),
+      ),
       content: SizedBox(
         width: 0.85.sw,
         height: 0.55.sh,
@@ -117,7 +130,10 @@ class _CreateGroupDialogState extends State<CreateGroupDialog> {
                 hintText: 'Enter group name...',
                 prefixIcon: const Icon(Icons.groups_outlined),
                 border: OutlineInputBorder(borderRadius: AppSpacing.radiusMd),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12.w,
+                  vertical: 10.h,
+                ),
               ),
             ),
             SizedBox(height: 12.h),
@@ -130,40 +146,48 @@ class _CreateGroupDialogState extends State<CreateGroupDialog> {
               child: _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : _availableUsers.isEmpty
-                      ? Center(child: Text('No users found', style: AppTypography.caption(textSecondary)))
-                      : ListView.builder(
-                          itemCount: _availableUsers.length,
-                          itemBuilder: (context, index) {
-                            final user = _availableUsers[index];
-                            final isSelected = _selectedUserIds.contains(user.id);
-                            return CheckboxListTile(
-                              value: isSelected,
-                              activeColor: primary,
-                              contentPadding: EdgeInsets.zero,
-                              secondary: AppAvatar(
-                                imageUrl: user.avatarUrl,
-                                name: user.name,
-                                size: 36.r,
-                              ),
-                              title: Text(user.name, style: AppTypography.bodySmall(textPrimary)),
-                              subtitle: Text(
-                                user.email,
-                                style: AppTypography.caption(textSecondary),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              onChanged: (val) {
-                                setState(() {
-                                  if (val == true) {
-                                    _selectedUserIds.add(user.id);
-                                  } else {
-                                    _selectedUserIds.remove(user.id);
-                                  }
-                                });
-                              },
-                            );
+                  ? Center(
+                      child: Text(
+                        'No users found',
+                        style: AppTypography.caption(textSecondary),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: _availableUsers.length,
+                      itemBuilder: (context, index) {
+                        final user = _availableUsers[index];
+                        final isSelected = _selectedUserIds.contains(user.id);
+                        return CheckboxListTile(
+                          value: isSelected,
+                          activeColor: primary,
+                          contentPadding: EdgeInsets.zero,
+                          secondary: AppAvatar(
+                            imageUrl: user.avatarUrl,
+                            name: user.name,
+                            size: 36.r,
+                          ),
+                          title: Text(
+                            user.name,
+                            style: AppTypography.bodySmall(textPrimary),
+                          ),
+                          subtitle: Text(
+                            user.email,
+                            style: AppTypography.caption(textSecondary),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onChanged: (val) {
+                            setState(() {
+                              if (val == true) {
+                                _selectedUserIds.add(user.id);
+                              } else {
+                                _selectedUserIds.remove(user.id);
+                              }
+                            });
                           },
-                        ),
+                        );
+                      },
+                    ),
             ),
           ],
         ),

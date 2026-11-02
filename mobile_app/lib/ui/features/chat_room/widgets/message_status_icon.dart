@@ -5,11 +5,7 @@ class MessageStatusIcon extends StatelessWidget {
   final String status;
   final bool isMe;
 
-  const MessageStatusIcon({
-    super.key,
-    required this.status,
-    this.isMe = true,
-  });
+  const MessageStatusIcon({super.key, required this.status, this.isMe = true});
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +28,7 @@ class MessageStatusIcon extends StatelessWidget {
           color: Colors.white.withAlpha(200),
         );
       case 'delivered':
-        return Icon(
-          Icons.done_all_rounded,
-          size: 15.sp,
-          color: Colors.white,
-        );
+        return Icon(Icons.done_all_rounded, size: 15.sp, color: Colors.white);
       case 'read':
         return Icon(
           Icons.done_all_rounded,
@@ -58,4 +50,3 @@ class MessageStatusIcon extends StatelessWidget {
     }
   }
 }
-

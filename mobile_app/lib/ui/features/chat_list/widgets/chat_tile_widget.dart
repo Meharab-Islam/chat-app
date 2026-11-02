@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+
 import '../../../../data/models/chat_conversation_model.dart';
 import '../../../../data/models/message_model.dart';
 import '../../../core/design_system/app_colors.dart';
@@ -27,8 +28,12 @@ class ChatTileWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     final peer = conversation.peerUser;
     final lastMsg = conversation.lastMessage;
@@ -101,7 +106,8 @@ class ChatTileWidget extends StatelessWidget {
     if (message == null) return const SizedBox.shrink();
 
     final isMe = currentUserId != null && message.senderId == currentUserId;
-    final isAttachment = message.mediaType != MessageMediaType.none ||
+    final isAttachment =
+        message.mediaType != MessageMediaType.none ||
         (message.mediaUrl != null && message.mediaUrl!.isNotEmpty) ||
         message.attachmentUrls.isNotEmpty ||
         message.text == 'Attachment';
@@ -123,7 +129,9 @@ class ChatTileWidget extends StatelessWidget {
       }
       text = isMe ? 'You: Attachment' : 'Attachment';
     } else {
-      text = isMe && message.text.isNotEmpty ? 'You: ${message.text}' : (message.text.isNotEmpty ? message.text : 'Attachment');
+      text = isMe && message.text.isNotEmpty
+          ? 'You: ${message.text}'
+          : (message.text.isNotEmpty ? message.text : 'Attachment');
     }
 
     return Row(
@@ -152,4 +160,3 @@ class ChatTileWidget extends StatelessWidget {
     return DateFormat('MMM d').format(dt);
   }
 }
-

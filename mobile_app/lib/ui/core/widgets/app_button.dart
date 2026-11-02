@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../design_system/app_spacing.dart';
 import '../design_system/app_typography.dart';
 
@@ -28,12 +29,12 @@ class AppButton extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final effectiveBg = backgroundColor ??
-        (isOutlined
-            ? Colors.transparent
-            : theme.colorScheme.primary);
+    final effectiveBg =
+        backgroundColor ??
+        (isOutlined ? Colors.transparent : theme.colorScheme.primary);
 
-    final effectiveFg = textColor ??
+    final effectiveFg =
+        textColor ??
         (isOutlined
             ? (isDark ? Colors.white : Colors.black87)
             : theme.colorScheme.onPrimary);
@@ -51,7 +52,9 @@ class AppButton extends StatelessWidget {
             borderRadius: AppSpacing.radiusMd,
             side: isOutlined
                 ? BorderSide(
-                    color: isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0),
+                    color: isDark
+                        ? const Color(0xFF27272A)
+                        : const Color(0xFFE2E8F0),
                     width: 1.5,
                   )
                 : BorderSide.none,
@@ -71,18 +74,11 @@ class AppButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (leading != null) ...[
-                    leading!,
-                    SizedBox(width: 10.w),
-                  ],
-                  Text(
-                    text,
-                    style: AppTypography.buttonText(effectiveFg),
-                  ),
+                  if (leading != null) ...[leading!, SizedBox(width: 10.w)],
+                  Text(text, style: AppTypography.buttonText(effectiveFg)),
                 ],
               ),
       ),
     );
   }
 }
-

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/models/message_model.dart';
 import '../../../../data/repositories/chat_repository.dart';
 import '../../../core/design_system/app_colors.dart';
@@ -35,8 +36,12 @@ class _ForwardBottomSheetState extends State<ForwardBottomSheet> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     final chatRepo = context.read<ChatRepository>();
     final conversations = chatRepo.conversations;
@@ -59,7 +64,9 @@ class _ForwardBottomSheetState extends State<ForwardBottomSheet> {
                   width: 36.w,
                   height: 4.h,
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+                    color: isDark
+                        ? AppColors.darkDivider
+                        : AppColors.lightDivider,
                     borderRadius: BorderRadius.circular(2.r),
                   ),
                 ),
@@ -81,11 +88,15 @@ class _ForwardBottomSheetState extends State<ForwardBottomSheet> {
                   itemCount: conversations.length,
                   separatorBuilder: (context, index) => Divider(
                     height: 1,
-                    color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+                    color: isDark
+                        ? AppColors.darkDivider
+                        : AppColors.lightDivider,
                   ),
                   itemBuilder: (context, index) {
                     final item = conversations[index];
-                    final isSelected = _selectedConversationIds.contains(item.id);
+                    final isSelected = _selectedConversationIds.contains(
+                      item.id,
+                    );
 
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
@@ -101,7 +112,9 @@ class _ForwardBottomSheetState extends State<ForwardBottomSheet> {
                       trailing: Checkbox(
                         value: isSelected,
                         activeColor: theme.colorScheme.primary,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.r),
+                        ),
                         onChanged: (val) {
                           setState(() {
                             if (val == true) {
@@ -131,7 +144,8 @@ class _ForwardBottomSheetState extends State<ForwardBottomSheet> {
                 child: AppButton(
                   text: 'Forward (${_selectedConversationIds.length})',
                   isLoading: _isForwarding,
-                  onPressed: _selectedConversationIds.isEmpty || currentUser == null
+                  onPressed:
+                      _selectedConversationIds.isEmpty || currentUser == null
                       ? null
                       : () async {
                           final messenger = ScaffoldMessenger.of(context);
@@ -141,8 +155,8 @@ class _ForwardBottomSheetState extends State<ForwardBottomSheet> {
                           setState(() => _isForwarding = true);
                           await chatRepo.forwardMessage(
                             messageId: widget.message.id,
-                            targetConversationIds:
-                                _selectedConversationIds.toList(),
+                            targetConversationIds: _selectedConversationIds
+                                .toList(),
                           );
 
                           if (mounted) {

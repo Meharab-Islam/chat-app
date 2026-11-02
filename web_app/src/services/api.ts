@@ -181,6 +181,20 @@ class ApiService {
       body: JSON.stringify({ emoji }),
     });
   }
+
+  async getCallToken(chatId: string, callType: 'audio' | 'video' = 'video'): Promise<{
+    token: string;
+    url: string;
+    roomName: string;
+    callType: 'audio' | 'video';
+    user: { id: string; name: string; avatar?: string };
+    chat: { id: string; name: string; isGroup: boolean };
+  }> {
+    return this.request('/calls/token', {
+      method: 'POST',
+      body: JSON.stringify({ chatId, callType }),
+    });
+  }
 }
 
 export const api = new ApiService();

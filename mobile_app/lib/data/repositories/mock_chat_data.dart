@@ -41,42 +41,41 @@ class MockChatData {
   ];
 
   static List<MessageModel> initialSarahMessages(String myId) => [
-        MessageModel(
-          id: 'msg_1',
-          conversationId: 'conv_sarah',
-          senderId: 'usr_sarah',
-          text: 'Hey! Did you check out the new design system guidelines?',
-          timestamp: DateTime.now().subtract(const Duration(minutes: 45)),
-        ),
-        MessageModel(
-          id: 'msg_2',
-          conversationId: 'conv_sarah',
-          senderId: myId,
-          text: 'Yes! Super clean, pure white and pitch black OLED support.',
-          timestamp: DateTime.now().subtract(const Duration(minutes: 38)),
-        ),
-        MessageModel(
-          id: 'msg_3',
-          conversationId: 'conv_sarah',
-          senderId: 'usr_sarah',
-          text: 'Look at this photo from today\'s photoshoot!',
-          mediaUrl:
-              'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800',
-          mediaType: MessageMediaType.image,
-          timestamp: DateTime.now().subtract(const Duration(minutes: 25)),
-        ),
-        MessageModel(
-          id: 'msg_4',
-          conversationId: 'conv_sarah',
-          senderId: 'usr_sarah',
-          text: 'Here is the short clip of the river scene:',
-          mediaUrl:
-              'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
-          mediaType: MessageMediaType.video,
-          durationSeconds: 30,
-          timestamp: DateTime.now().subtract(const Duration(minutes: 10)),
-        ),
-      ];
+    MessageModel(
+      id: 'msg_1',
+      conversationId: 'conv_sarah',
+      senderId: 'usr_sarah',
+      text: 'Hey! Did you check out the new design system guidelines?',
+      timestamp: DateTime.now().subtract(const Duration(minutes: 45)),
+    ),
+    MessageModel(
+      id: 'msg_2',
+      conversationId: 'conv_sarah',
+      senderId: myId,
+      text: 'Yes! Super clean, pure white and pitch black OLED support.',
+      timestamp: DateTime.now().subtract(const Duration(minutes: 38)),
+    ),
+    MessageModel(
+      id: 'msg_3',
+      conversationId: 'conv_sarah',
+      senderId: 'usr_sarah',
+      text: 'Look at this photo from today\'s photoshoot!',
+      mediaUrl:
+          'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800',
+      mediaType: MessageMediaType.image,
+      timestamp: DateTime.now().subtract(const Duration(minutes: 25)),
+    ),
+    MessageModel(
+      id: 'msg_4',
+      conversationId: 'conv_sarah',
+      senderId: 'usr_sarah',
+      text: 'Here is the short clip of the river scene:',
+      mediaUrl: 'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+      mediaType: MessageMediaType.video,
+      durationSeconds: 30,
+      timestamp: DateTime.now().subtract(const Duration(minutes: 10)),
+    ),
+  ];
 
   static List<ChatConversationModel> initialConversations(String myId) {
     return [
@@ -136,4 +135,3 @@ class MockChatData {
     ];
   }
 }
-

@@ -1,8 +1,10 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/repositories/chat_repository.dart';
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_typography.dart';
@@ -65,7 +67,10 @@ class _GroupInfoBottomSheetState extends State<GroupInfoBottomSheet> {
 
   Future<void> _pickAvatar() async {
     final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 85,
+    );
     if (picked != null) {
       setState(() => _selectedAvatarFile = File(picked.path));
     }
@@ -91,9 +96,9 @@ class _GroupInfoBottomSheetState extends State<GroupInfoBottomSheet> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update group: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to update group: $e')));
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -105,8 +110,12 @@ class _GroupInfoBottomSheetState extends State<GroupInfoBottomSheet> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final primary = theme.colorScheme.primary;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Container(
       padding: EdgeInsets.only(
@@ -134,7 +143,10 @@ class _GroupInfoBottomSheetState extends State<GroupInfoBottomSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Group Info & Settings', style: AppTypography.headingSmall(textPrimary)),
+              Text(
+                'Group Info & Settings',
+                style: AppTypography.headingSmall(textPrimary),
+              ),
               IconButton(
                 icon: const Icon(Icons.close),
                 onPressed: () => Navigator.pop(context),
@@ -150,7 +162,12 @@ class _GroupInfoBottomSheetState extends State<GroupInfoBottomSheet> {
                   child: _selectedAvatarFile != null
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(40.r),
-                          child: Image.file(_selectedAvatarFile!, width: 80.r, height: 80.r, fit: BoxFit.cover),
+                          child: Image.file(
+                            _selectedAvatarFile!,
+                            width: 80.r,
+                            height: 80.r,
+                            fit: BoxFit.cover,
+                          ),
                         )
                       : AppAvatar(
                           imageUrl: widget.groupAvatar,
@@ -166,7 +183,11 @@ class _GroupInfoBottomSheetState extends State<GroupInfoBottomSheet> {
                     child: CircleAvatar(
                       radius: 14.r,
                       backgroundColor: primary,
-                      child: Icon(Icons.camera_alt, size: 15.r, color: Colors.white),
+                      child: Icon(
+                        Icons.camera_alt,
+                        size: 15.r,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -176,25 +197,39 @@ class _GroupInfoBottomSheetState extends State<GroupInfoBottomSheet> {
           SizedBox(height: 8.h),
           TextButton(
             onPressed: _pickAvatar,
-            child: Text('Change Group Photo', style: TextStyle(fontSize: 12.sp, color: primary)),
+            child: Text(
+              'Change Group Photo',
+              style: TextStyle(fontSize: 12.sp, color: primary),
+            ),
           ),
           SizedBox(height: 12.h),
           TextField(
             controller: _nameController,
-            style: TextStyle(fontSize: 15.sp, color: textPrimary, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 15.sp,
+              color: textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
             decoration: InputDecoration(
               labelText: 'Group Name',
               labelStyle: TextStyle(color: textSecondary),
               filled: true,
-              fillColor: isDark ? Colors.white.withAlpha(10) : Colors.grey.withAlpha(20),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.r), borderSide: BorderSide.none),
+              fillColor: isDark
+                  ? Colors.white.withAlpha(10)
+                  : Colors.grey.withAlpha(20),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12.r),
+                borderSide: BorderSide.none,
+              ),
             ),
           ),
           SizedBox(height: 16.h),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
             decoration: BoxDecoration(
-              color: isDark ? Colors.white.withAlpha(8) : Colors.grey.withAlpha(15),
+              color: isDark
+                  ? Colors.white.withAlpha(8)
+                  : Colors.grey.withAlpha(15),
               borderRadius: BorderRadius.circular(12.r),
             ),
             child: Row(
@@ -203,7 +238,11 @@ class _GroupInfoBottomSheetState extends State<GroupInfoBottomSheet> {
                 SizedBox(width: 10.w),
                 Text(
                   '${widget.memberCount > 0 ? widget.memberCount : 2} Total Members',
-                  style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600, color: textPrimary),
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: textPrimary,
+                  ),
                 ),
               ],
             ),
@@ -217,11 +256,26 @@ class _GroupInfoBottomSheetState extends State<GroupInfoBottomSheet> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: primary,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14.r),
+                ),
               ),
               child: _isSaving
-                  ? SizedBox(width: 20.r, height: 20.r, child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : Text('Save Changes', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600)),
+                  ? SizedBox(
+                      width: 20.r,
+                      height: 20.r,
+                      child: const CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(
+                      'Save Changes',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
           ),
         ],

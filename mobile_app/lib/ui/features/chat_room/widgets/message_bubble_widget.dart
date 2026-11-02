@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+
 import '../../../../data/models/message_model.dart';
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_typography.dart';
@@ -40,7 +41,9 @@ class MessageBubbleWidget extends StatelessWidget {
 
     final bubbleBg = isMe
         ? primary
-        : (isDark ? AppColors.darkBubbleReceiver : AppColors.lightBubbleReceiver);
+        : (isDark
+              ? AppColors.darkBubbleReceiver
+              : AppColors.lightBubbleReceiver);
     final textColor = isMe
         ? Colors.white
         : (isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary);
@@ -48,8 +51,11 @@ class MessageBubbleWidget extends StatelessWidget {
         ? Colors.white.withAlpha(220)
         : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary);
 
-    final hasMedia = (message.mediaType.isImage || message.mediaType.isVideo) && !message.isUnsent;
-    final isMediaOnly = hasMedia &&
+    final hasMedia =
+        (message.mediaType.isImage || message.mediaType.isVideo) &&
+        !message.isUnsent;
+    final isMediaOnly =
+        hasMedia &&
         message.text.isEmpty &&
         message.replyToText == null &&
         !message.isForwarded;
@@ -65,22 +71,24 @@ class MessageBubbleWidget extends StatelessWidget {
               ? EdgeInsets.all(5.r)
               : EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
           decoration: BoxDecoration(
-            color: message.isUnsent ? Colors.grey.withAlpha(50) : (isMe ? null : bubbleBg),
+            color: message.isUnsent
+                ? Colors.grey.withAlpha(50)
+                : (isMe ? null : bubbleBg),
             gradient: message.isUnsent
                 ? null
                 : (isMe
-                    ? LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [primary, primary.withAlpha(225)],
-                      )
-                    : (isDark
-                        ? const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [Color(0xFF222938), Color(0xFF181D28)],
-                          )
-                        : null)),
+                      ? LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [primary, primary.withAlpha(225)],
+                        )
+                      : (isDark
+                            ? const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [Color(0xFF222938), Color(0xFF181D28)],
+                              )
+                            : null)),
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(18.r),
               topRight: Radius.circular(18.r),
@@ -90,24 +98,33 @@ class MessageBubbleWidget extends StatelessWidget {
             border: isMe
                 ? null
                 : Border.all(
-                    color: isDark ? const Color(0xFF384358) : const Color(0xFFE2E8F0),
+                    color: isDark
+                        ? const Color(0xFF384358)
+                        : const Color(0xFFE2E8F0),
                     width: 1.0,
                   ),
             boxShadow: [
               BoxShadow(
                 color: isMe
                     ? primary.withAlpha(isDark ? 55 : 60)
-                    : (isDark ? Colors.black.withAlpha(90) : const Color(0xFF0F172A).withAlpha(18)),
+                    : (isDark
+                          ? Colors.black.withAlpha(90)
+                          : const Color(0xFF0F172A).withAlpha(18)),
                 blurRadius: isDark ? 8 : 7,
                 offset: const Offset(0, 2.5),
               ),
             ],
           ),
           child: Column(
-            crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: isMe
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (!isMe && message.senderName != null && message.senderName!.isNotEmpty && !message.isUnsent)
+              if (!isMe &&
+                  message.senderName != null &&
+                  message.senderName!.isNotEmpty &&
+                  !message.isUnsent)
                 Padding(
                   padding: EdgeInsets.only(bottom: 3.h),
                   child: Text(
@@ -115,7 +132,9 @@ class MessageBubbleWidget extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11.5.sp,
                       fontWeight: FontWeight.w700,
-                      color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0284C7),
+                      color: isDark
+                          ? const Color(0xFF38BDF8)
+                          : const Color(0xFF0284C7),
                     ),
                   ),
                 ),
@@ -126,7 +145,9 @@ class MessageBubbleWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isMe
                         ? Colors.black.withAlpha(28)
-                        : (isDark ? Colors.white.withAlpha(12) : primary.withAlpha(12)),
+                        : (isDark
+                              ? Colors.white.withAlpha(12)
+                              : primary.withAlpha(12)),
                     borderRadius: BorderRadius.circular(8.r),
                     border: Border(
                       left: BorderSide(
@@ -139,7 +160,11 @@ class MessageBubbleWidget extends StatelessWidget {
                     message.replyToText!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 11.sp, fontStyle: FontStyle.italic, color: textColor),
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      fontStyle: FontStyle.italic,
+                      color: textColor,
+                    ),
                   ),
                 ),
               ],
@@ -147,13 +172,20 @@ class MessageBubbleWidget extends StatelessWidget {
                 AppForwardedTag(originalSenderName: message.originalSenderName),
                 SizedBox(height: 4.h),
               ],
-              if ((message.mediaType.isImage || message.mediaType.isVideo) && !message.isUnsent) ...[
-                MediaGridMessageWidget(message: message, onDownload: onDownload),
+              if ((message.mediaType.isImage || message.mediaType.isVideo) &&
+                  !message.isUnsent) ...[
+                MediaGridMessageWidget(
+                  message: message,
+                  onDownload: onDownload,
+                ),
                 if (message.text.isNotEmpty) SizedBox(height: 4.h),
-              ] else if (message.mediaType.isAudio && !message.isUnsent && message.mediaUrl != null) ...[
+              ] else if (message.mediaType.isAudio &&
+                  !message.isUnsent &&
+                  message.mediaUrl != null) ...[
                 AudioMessageWidget(audioUrl: message.mediaUrl!, isMe: isMe),
                 if (message.text.isNotEmpty) SizedBox(height: 4.h),
-              ] else if (message.mediaType.isDocumentOrFile && !message.isUnsent) ...[
+              ] else if (message.mediaType.isDocumentOrFile &&
+                  !message.isUnsent) ...[
                 FileMessageWidget(message: message, isMe: isMe),
                 if (message.text.isNotEmpty) SizedBox(height: 4.h),
               ],
@@ -163,7 +195,11 @@ class MessageBubbleWidget extends StatelessWidget {
                       ? (isMe ? 'Unsent by you' : 'This message was unsent')
                       : message.text,
                   style: message.isUnsent
-                      ? TextStyle(fontStyle: FontStyle.italic, color: timeColor, fontSize: 13.sp)
+                      ? TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: timeColor,
+                          fontSize: 13.sp,
+                        )
                       : AppTypography.bodyMedium(textColor),
                 ),
                 SizedBox(height: 2.h),
@@ -174,7 +210,9 @@ class MessageBubbleWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isMe
                       ? Colors.black.withAlpha(35)
-                      : (isDark ? Colors.white.withAlpha(14) : const Color(0xFFF1F5F9)),
+                      : (isDark
+                            ? Colors.white.withAlpha(14)
+                            : const Color(0xFFF1F5F9)),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Row(
@@ -205,7 +243,9 @@ class MessageBubbleWidget extends StatelessWidget {
   void _showMessageActionSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
       builder: (ctx) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -227,12 +267,43 @@ class MessageBubbleWidget extends StatelessWidget {
             ),
             const Divider(),
             if (onReply != null)
-              ListTile(leading: const Icon(Icons.reply), title: const Text('Reply'), onTap: () { Navigator.pop(ctx); onReply?.call(); }),
-            ListTile(leading: const Icon(Icons.forward_rounded), title: const Text('Forward'), onTap: () { Navigator.pop(ctx); onForward(); }),
+              ListTile(
+                leading: const Icon(Icons.reply),
+                title: const Text('Reply'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  onReply?.call();
+                },
+              ),
+            ListTile(
+              leading: const Icon(Icons.forward_rounded),
+              title: const Text('Forward'),
+              onTap: () {
+                Navigator.pop(ctx);
+                onForward();
+              },
+            ),
             if (isMe && !message.isUnsent && onUnsend != null)
-              ListTile(leading: const Icon(Icons.undo, color: Colors.red), title: const Text('Unsend', style: TextStyle(color: Colors.red)), onTap: () { Navigator.pop(ctx); onUnsend?.call(); }),
+              ListTile(
+                leading: const Icon(Icons.undo, color: Colors.red),
+                title: const Text(
+                  'Unsend',
+                  style: TextStyle(color: Colors.red),
+                ),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  onUnsend?.call();
+                },
+              ),
             if (onDeleteForMe != null)
-              ListTile(leading: const Icon(Icons.delete_outline), title: const Text('Delete for me'), onTap: () { Navigator.pop(ctx); onDeleteForMe?.call(); }),
+              ListTile(
+                leading: const Icon(Icons.delete_outline),
+                title: const Text('Delete for me'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  onDeleteForMe?.call();
+                },
+              ),
           ],
         ),
       ),

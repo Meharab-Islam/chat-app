@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,7 +26,8 @@ class SingleMediaMessageWidget extends StatefulWidget {
   });
 
   @override
-  State<SingleMediaMessageWidget> createState() => _SingleMediaMessageWidgetState();
+  State<SingleMediaMessageWidget> createState() =>
+      _SingleMediaMessageWidgetState();
 }
 
 class _SingleMediaMessageWidgetState extends State<SingleMediaMessageWidget> {
@@ -48,22 +50,20 @@ class _SingleMediaMessageWidgetState extends State<SingleMediaMessageWidget> {
 
   void _resolveImageRatio() {
     try {
-      final ImageProvider provider = widget.url.startsWith('http://') || widget.url.startsWith('https://')
+      final ImageProvider provider =
+          widget.url.startsWith('http://') || widget.url.startsWith('https://')
           ? CachedNetworkImageProvider(widget.url)
           : FileImage(File(widget.url)) as ImageProvider;
       _imageStream = provider.resolve(const ImageConfiguration());
-      _imageListener = ImageStreamListener(
-        (ImageInfo info, bool _) {
-          final w = info.image.width.toDouble();
-          final h = info.image.height.toDouble();
-          if (h > 0 && mounted) {
-            final ratio = w / h;
-            _aspectRatioCache[widget.url] = ratio;
-            setState(() => _aspectRatio = ratio);
-          }
-        },
-        onError: (err, stack) {},
-      );
+      _imageListener = ImageStreamListener((ImageInfo info, bool _) {
+        final w = info.image.width.toDouble();
+        final h = info.image.height.toDouble();
+        if (h > 0 && mounted) {
+          final ratio = w / h;
+          _aspectRatioCache[widget.url] = ratio;
+          setState(() => _aspectRatio = ratio);
+        }
+      }, onError: (err, stack) {});
       _imageStream?.addListener(_imageListener!);
     } catch (_) {}
   }
@@ -116,8 +116,12 @@ class _SingleMediaMessageWidgetState extends State<SingleMediaMessageWidget> {
       context,
       MaterialPageRoute(
         builder: (_) => widget.isVideo
-            ? VideoPlayerView(message: widget.message.copyWith(mediaUrl: widget.url))
-            : ImageViewerView(message: widget.message.copyWith(mediaUrl: widget.url)),
+            ? VideoPlayerView(
+                message: widget.message.copyWith(mediaUrl: widget.url),
+              )
+            : ImageViewerView(
+                message: widget.message.copyWith(mediaUrl: widget.url),
+              ),
       ),
     );
   }

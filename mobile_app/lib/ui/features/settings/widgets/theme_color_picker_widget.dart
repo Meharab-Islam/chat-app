@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../core/design_system/app_colors.dart';
 
 class ThemeColorPickerWidget extends StatelessWidget {
@@ -46,16 +47,12 @@ class ThemeColorPickerWidget extends StatelessWidget {
                           color: accent.color.withAlpha(120),
                           blurRadius: 8,
                           offset: const Offset(0, 3),
-                        )
+                        ),
                       ]
                     : null,
               ),
               child: isSelected
-                  ? Icon(
-                      Icons.check_rounded,
-                      color: Colors.white,
-                      size: 20.r,
-                    )
+                  ? Icon(Icons.check_rounded, color: Colors.white, size: 20.r)
                   : null,
             ),
           );

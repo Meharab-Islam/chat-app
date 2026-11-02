@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/models/chat_conversation_model.dart';
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_typography.dart';
@@ -22,8 +23,12 @@ class ChatListView extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final primary = theme.colorScheme.primary;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     final authVM = context.watch<AuthViewModel>();
     final currentUser = authVM.currentUser;
@@ -33,7 +38,13 @@ class ChatListView extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            _buildCustomHeader(context, userName, currentUser, textPrimary, textSecondary),
+            _buildCustomHeader(
+              context,
+              userName,
+              currentUser,
+              textPrimary,
+              textSecondary,
+            ),
             Padding(
               padding: EdgeInsets.fromLTRB(16.w, 4.h, 16.w, 10.h),
               child: const ChatSearchBar(),
@@ -57,20 +68,26 @@ class ChatListView extends StatelessWidget {
                     onRefresh: () => vm.loadConversations(),
                     child: list.isEmpty
                         ? ListView(
-                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
+                            ),
                             children: [
                               SizedBox(height: 120.h),
                               _buildEmptyState(textSecondary),
                             ],
                           )
                         : ListView.separated(
-                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                            physics: const AlwaysScrollableScrollPhysics(
+                              parent: BouncingScrollPhysics(),
+                            ),
                             itemCount: list.length,
                             separatorBuilder: (context, index) => Divider(
                               height: 1,
                               indent: 80.w,
                               endIndent: 16.w,
-                              color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
+                              color: isDark
+                                  ? AppColors.darkDivider
+                                  : AppColors.lightDivider,
                             ),
                             itemBuilder: (context, index) {
                               final item = list[index];
@@ -91,7 +108,8 @@ class ChatListView extends StatelessWidget {
                                     ),
                                   );
                                 },
-                                onLongPress: () => _showOptions(context, vm, item),
+                                onLongPress: () =>
+                                    _showOptions(context, vm, item),
                               );
                             },
                           ),
@@ -108,15 +126,25 @@ class ChatListView extends StatelessWidget {
         elevation: 3,
         shape: const CircleBorder(),
         tooltip: 'New Chat',
-        child: const Icon(Icons.edit_note_rounded, color: Colors.white, size: 26),
+        child: const Icon(
+          Icons.edit_note_rounded,
+          color: Colors.white,
+          size: 26,
+        ),
       ),
     );
   }
 
-  void _showOptions(BuildContext context, ChatListViewModel vm, ChatConversationModel item) {
+  void _showOptions(
+    BuildContext context,
+    ChatListViewModel vm,
+    ChatConversationModel item,
+  ) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
       builder: (ctx) => SafeArea(
         child: Wrap(
           children: [
@@ -129,8 +157,14 @@ class ChatListView extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.delete_outline_rounded, color: AppColors.danger),
-              title: const Text('Delete chat', style: TextStyle(color: AppColors.danger)),
+              leading: const Icon(
+                Icons.delete_outline_rounded,
+                color: AppColors.danger,
+              ),
+              title: const Text(
+                'Delete chat',
+                style: TextStyle(color: AppColors.danger),
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 _confirmDelete(context, vm, item.id);
@@ -142,20 +176,30 @@ class ChatListView extends StatelessWidget {
     );
   }
 
-  void _confirmDelete(BuildContext context, ChatListViewModel vm, String chatId) {
+  void _confirmDelete(
+    BuildContext context,
+    ChatListViewModel vm,
+    String chatId,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Conversation?'),
         content: const Text('Are you sure you want to delete this chat?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
           TextButton(
             onPressed: () {
               Navigator.pop(ctx);
               vm.deleteConversation(chatId);
             },
-            child: const Text('Delete', style: TextStyle(color: AppColors.danger)),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: AppColors.danger),
+            ),
           ),
         ],
       ),
@@ -180,18 +224,14 @@ class ChatListView extends StatelessWidget {
             children: [
               Text(
                 'Hello, $userName 👋',
-                style: AppTypography.caption(textSecondary).copyWith(
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTypography.caption(textSecondary)
+                    .copyWith(fontSize: 12.sp, fontWeight: FontWeight.w500),
               ),
               SizedBox(height: 2.h),
               Text(
                 'Messages',
-                style: AppTypography.headingLarge(textPrimary).copyWith(
-                  fontSize: 26.sp,
-                  letterSpacing: -0.8,
-                ),
+                style: AppTypography.headingLarge(textPrimary)
+                    .copyWith(fontSize: 26.sp, letterSpacing: -0.8),
               ),
             ],
           ),
@@ -239,9 +279,16 @@ class ChatListView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.chat_bubble_outline_rounded, size: 48.r, color: textSecondary.withAlpha(120)),
+          Icon(
+            Icons.chat_bubble_outline_rounded,
+            size: 48.r,
+            color: textSecondary.withAlpha(120),
+          ),
           SizedBox(height: 12.h),
-          Text('No conversations found', style: AppTypography.bodyMedium(textSecondary)),
+          Text(
+            'No conversations found',
+            style: AppTypography.bodyMedium(textSecondary),
+          ),
         ],
       ),
     );

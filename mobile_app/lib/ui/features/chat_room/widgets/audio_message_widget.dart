@@ -46,7 +46,8 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     if (_state == PlayerState.playing) {
       await _player.pause();
     } else {
-      if (widget.audioUrl.startsWith('http://') || widget.audioUrl.startsWith('https://')) {
+      if (widget.audioUrl.startsWith('http://') ||
+          widget.audioUrl.startsWith('https://')) {
         await _player.play(UrlSource(widget.audioUrl));
       } else {
         await _player.play(DeviceFileSource(widget.audioUrl));
@@ -61,8 +62,30 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
   }
 
   static const List<double> _waveHeights = [
-    8, 14, 20, 12, 24, 18, 10, 22, 26, 16, 20, 10,
-    18, 24, 22, 12, 16, 22, 24, 14, 18, 22, 12, 8,
+    8,
+    14,
+    20,
+    12,
+    24,
+    18,
+    10,
+    22,
+    26,
+    16,
+    20,
+    10,
+    18,
+    24,
+    22,
+    12,
+    16,
+    22,
+    24,
+    14,
+    18,
+    22,
+    12,
+    8,
   ];
 
   @override
@@ -80,7 +103,9 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
         children: [
           IconButton(
             icon: Icon(
-              isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_fill_rounded,
+              isPlaying
+                  ? Icons.pause_circle_filled_rounded
+                  : Icons.play_circle_fill_rounded,
               size: 34.r,
               color: fg,
             ),
@@ -128,9 +153,17 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
                     children: [
                       Text(
                         _formatDuration(isPlaying ? _position : _duration),
-                        style: TextStyle(fontSize: 10.sp, color: fg.withAlpha(180), fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: fg.withAlpha(180),
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      Icon(Icons.mic_rounded, size: 12.r, color: fg.withAlpha(140)),
+                      Icon(
+                        Icons.mic_rounded,
+                        size: 12.r,
+                        color: fg.withAlpha(140),
+                      ),
                     ],
                   ),
                 ],
@@ -142,4 +175,3 @@ class _AudioMessageWidgetState extends State<AudioMessageWidget> {
     );
   }
 }
-

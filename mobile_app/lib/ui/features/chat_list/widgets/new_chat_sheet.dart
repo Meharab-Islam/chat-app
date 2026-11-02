@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/models/user_model.dart';
 import '../../../../data/repositories/chat_repository.dart';
 import '../../../core/design_system/app_colors.dart';
@@ -48,7 +50,10 @@ class _NewChatSheetState extends State<NewChatSheet> {
 
   void _onSearchChanged(String query) {
     _debounce?.cancel();
-    _debounce = Timer(const Duration(milliseconds: 300), () => _performSearch(query));
+    _debounce = Timer(
+      const Duration(milliseconds: 300),
+      () => _performSearch(query),
+    );
   }
 
   Future<void> _performSearch(String query) async {
@@ -71,10 +76,7 @@ class _NewChatSheetState extends State<NewChatSheet> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ChatRoomView(
-            conversationId: chat.id,
-            peerUser: user,
-          ),
+          builder: (_) => ChatRoomView(conversationId: chat.id, peerUser: user),
         ),
       );
     }
@@ -85,8 +87,12 @@ class _NewChatSheetState extends State<NewChatSheet> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final primary = theme.colorScheme.primary;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Container(
       height: 0.85.sh,
@@ -110,7 +116,10 @@ class _NewChatSheetState extends State<NewChatSheet> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('New Conversation', style: AppTypography.headingSmall(textPrimary)),
+                Text(
+                  'New Conversation',
+                  style: AppTypography.headingSmall(textPrimary),
+                ),
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.pop(context),
@@ -132,7 +141,10 @@ class _NewChatSheetState extends State<NewChatSheet> {
                   borderRadius: AppSpacing.radiusMd,
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 14.w,
+                  vertical: 12.h,
+                ),
               ),
             ),
           ),
@@ -146,8 +158,14 @@ class _NewChatSheetState extends State<NewChatSheet> {
               ),
               child: Icon(Icons.group_add_rounded, color: primary, size: 22.r),
             ),
-            title: Text('New Group', style: AppTypography.bodyMedium(textPrimary)),
-            subtitle: Text('Create a group chat with friends', style: AppTypography.caption(textSecondary)),
+            title: Text(
+              'New Group',
+              style: AppTypography.bodyMedium(textPrimary),
+            ),
+            subtitle: Text(
+              'Create a group chat with friends',
+              style: AppTypography.caption(textSecondary),
+            ),
             onTap: () {
               Navigator.pop(context);
               CreateGroupDialog.show(context);
@@ -161,35 +179,42 @@ class _NewChatSheetState extends State<NewChatSheet> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _users.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No users found',
-                          style: AppTypography.bodySmall(textSecondary),
+                ? Center(
+                    child: Text(
+                      'No users found',
+                      style: AppTypography.bodySmall(textSecondary),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: _users.length,
+                    itemBuilder: (context, index) {
+                      final user = _users[index];
+                      return ListTile(
+                        leading: AppAvatar(
+                          imageUrl: user.avatarUrl,
+                          name: user.name,
+                          isOnline: user.isOnline,
+                          size: 44.r,
                         ),
-                      )
-                    : ListView.builder(
-                        itemCount: _users.length,
-                        itemBuilder: (context, index) {
-                          final user = _users[index];
-                          return ListTile(
-                            leading: AppAvatar(
-                              imageUrl: user.avatarUrl,
-                              name: user.name,
-                              isOnline: user.isOnline,
-                              size: 44.r,
-                            ),
-                            title: Text(user.name, style: AppTypography.bodyMedium(textPrimary)),
-                            subtitle: Text(
-                              user.status.isNotEmpty ? user.status : user.email,
-                              style: AppTypography.caption(textSecondary),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            trailing: Icon(Icons.chat_bubble_outline_rounded, size: 20.r, color: primary),
-                            onTap: () => _startDirectChat(user),
-                          );
-                        },
-                      ),
+                        title: Text(
+                          user.name,
+                          style: AppTypography.bodyMedium(textPrimary),
+                        ),
+                        subtitle: Text(
+                          user.status.isNotEmpty ? user.status : user.email,
+                          style: AppTypography.caption(textSecondary),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        trailing: Icon(
+                          Icons.chat_bubble_outline_rounded,
+                          size: 20.r,
+                          color: primary,
+                        ),
+                        onTap: () => _startDirectChat(user),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

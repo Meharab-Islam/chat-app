@@ -58,3 +58,22 @@ export interface Chat {
   updatedAt: string;
 }
 
+export interface IncomingCall {
+  callId: string;
+  chatId: string;
+  caller: { id: string; name: string; avatar?: string };
+  callType: 'audio' | 'video';
+  isGroup: boolean;
+  chatName?: string;
+}
+
+export interface CallState {
+  isActive: boolean;
+  isConnecting: boolean;
+  callId: string | null;
+  chatId: string | null;
+  callType: 'audio' | 'video';
+  isGroup: boolean;
+  chatName: string;
+}
+

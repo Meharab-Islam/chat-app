@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../data/models/message_model.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/widgets/app_cached_image.dart';
@@ -21,12 +22,23 @@ class MediaGridMessageWidget extends StatelessWidget {
 
   bool _isVideo(String url) {
     final l = url.toLowerCase();
-    return l.endsWith('.mp4') || l.endsWith('.mov') || l.endsWith('.mkv') || l.endsWith('.webm') || l.endsWith('.avi') || l.endsWith('.3gp');
+    return l.endsWith('.mp4') ||
+        l.endsWith('.mov') ||
+        l.endsWith('.mkv') ||
+        l.endsWith('.webm') ||
+        l.endsWith('.avi') ||
+        l.endsWith('.3gp');
   }
 
   bool _isAudio(String url) {
     final l = url.toLowerCase();
-    return l.endsWith('.mp3') || l.endsWith('.wav') || l.endsWith('.m4a') || l.endsWith('.aac') || l.endsWith('.ogg') || l.endsWith('.opus') || l.endsWith('.flac');
+    return l.endsWith('.mp3') ||
+        l.endsWith('.wav') ||
+        l.endsWith('.m4a') ||
+        l.endsWith('.aac') ||
+        l.endsWith('.ogg') ||
+        l.endsWith('.opus') ||
+        l.endsWith('.flac');
   }
 
   void _open(BuildContext context, String url) {
@@ -53,9 +65,17 @@ class MediaGridMessageWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTile(BuildContext context, String url, double w, double h, {BorderRadius? radius}) {
+  Widget _buildTile(
+    BuildContext context,
+    String url,
+    double w,
+    double h, {
+    BorderRadius? radius,
+  }) {
     final r = radius ?? AppSpacing.radiusSm;
-    final isVid = _isVideo(url) || (message.mediaType.isVideo && message.attachmentUrls.length <= 1);
+    final isVid =
+        _isVideo(url) ||
+        (message.mediaType.isVideo && message.attachmentUrls.length <= 1);
     final isAud = _isAudio(url);
     if (isVid) {
       return VideoThumbnailWidget(
@@ -72,17 +92,34 @@ class MediaGridMessageWidget extends StatelessWidget {
         child: Container(
           width: w,
           height: h,
-          decoration: BoxDecoration(color: const Color(0xFF0F172A), borderRadius: r),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0F172A),
+            borderRadius: r,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 padding: EdgeInsets.all(6.r),
-                decoration: const BoxDecoration(color: Color(0xFF0284C7), shape: BoxShape.circle),
-                child: Icon(Icons.audiotrack_rounded, color: Colors.white, size: 20.r),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF0284C7),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.audiotrack_rounded,
+                  color: Colors.white,
+                  size: 20.r,
+                ),
               ),
               SizedBox(height: 4.h),
-              Text('Audio', style: TextStyle(color: Colors.white70, fontSize: 10.sp, fontWeight: FontWeight.w600)),
+              Text(
+                'Audio',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           ),
         ),
@@ -90,7 +127,13 @@ class MediaGridMessageWidget extends StatelessWidget {
     }
     return GestureDetector(
       onTap: () => _open(context, url),
-      child: AppCachedImage(imageUrl: url, width: w, height: h, fit: BoxFit.cover, borderRadius: r),
+      child: AppCachedImage(
+        imageUrl: url,
+        width: w,
+        height: h,
+        fit: BoxFit.cover,
+        borderRadius: r,
+      ),
     );
   }
 

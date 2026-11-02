@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../design_system/app_colors.dart';
 import '../design_system/app_spacing.dart';
 
@@ -43,7 +44,9 @@ class AppForwardedTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fg = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final fg = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -51,7 +54,9 @@ class AppForwardedTag extends StatelessWidget {
         Icon(Icons.reply_rounded, size: 13.r, color: fg),
         SizedBox(width: 4.w),
         Text(
-          originalSenderName != null ? 'Forwarded from $originalSenderName' : 'Forwarded',
+          originalSenderName != null
+              ? 'Forwarded from $originalSenderName'
+              : 'Forwarded',
           style: TextStyle(
             fontSize: 11.sp,
             fontStyle: FontStyle.italic,
@@ -62,4 +67,3 @@ class AppForwardedTag extends StatelessWidget {
     );
   }
 }
-

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../core/design_system/app_spacing.dart';
 
 class GoogleSignInButton extends StatefulWidget {
@@ -31,7 +32,9 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
       duration: const Duration(milliseconds: 100),
       curve: Curves.easeOutCubic,
       child: GestureDetector(
-        onTapDown: widget.isLoading ? null : (_) => setState(() => _isPressed = true),
+        onTapDown: widget.isLoading
+            ? null
+            : (_) => setState(() => _isPressed = true),
         onTapUp: widget.isLoading
             ? null
             : (_) {
@@ -86,7 +89,9 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                         width: 38.r,
                         height: 38.r,
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF1E2127) : const Color(0xFFF3F4F6),
+                          color: isDark
+                              ? const Color(0xFF1E2127)
+                              : const Color(0xFFF3F4F6),
                           shape: BoxShape.circle,
                         ),
                         padding: EdgeInsets.all(8.r),
@@ -123,13 +128,17 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
                         width: 32.r,
                         height: 32.r,
                         decoration: BoxDecoration(
-                          color: isDark ? const Color(0xFF1F232B) : const Color(0xFFF3F4F6),
+                          color: isDark
+                              ? const Color(0xFF1F232B)
+                              : const Color(0xFFF3F4F6),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.arrow_forward_rounded,
                           size: 16.r,
-                          color: isDark ? Colors.white70 : const Color(0xFF374151),
+                          color: isDark
+                              ? Colors.white70
+                              : const Color(0xFF374151),
                         ),
                       ),
                     ],

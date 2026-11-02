@@ -6,6 +6,8 @@ import { ChatArea } from './components/ChatArea';
 import { NewChatModal } from './components/NewChatModal';
 import { CreateGroupModal } from './components/CreateGroupModal';
 import { SettingsModal } from './components/SettingsModal';
+import { IncomingCallModal } from './components/IncomingCallModal';
+import { ActiveCallModal } from './components/ActiveCallModal';
 import { Loader2 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -38,6 +40,9 @@ export const App: React.FC = () => {
       <NewChatModal isOpen={isNewChatOpen} onClose={() => setIsNewChatOpen(false)} />
       <CreateGroupModal isOpen={isCreateGroupOpen} onClose={() => setIsCreateGroupOpen(false)} />
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+
+      <IncomingCallModal />
+      <ActiveCallModal />
     </div>
   );
 };

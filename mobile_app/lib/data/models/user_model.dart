@@ -42,26 +42,26 @@ class UserModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'email': email,
-        'avatarUrl': avatarUrl,
-        'status': status,
-        'bio': bio,
-        'isOnline': isOnline,
-        'lastSeen': lastSeen?.toIso8601String(),
-      };
+    'id': id,
+    'name': name,
+    'email': email,
+    'avatarUrl': avatarUrl,
+    'status': status,
+    'bio': bio,
+    'isOnline': isOnline,
+    'lastSeen': lastSeen?.toIso8601String(),
+  };
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-        id: json['id'] as String? ?? '',
-        name: json['name'] as String? ?? 'User',
-        email: json['email'] as String? ?? '',
-        avatarUrl: json['avatarUrl'] as String? ?? '',
-        status: json['status'] as String? ?? '',
-        bio: json['bio'] as String? ?? '',
-        isOnline: json['isOnline'] as bool? ?? false,
-        lastSeen: json['lastSeen'] != null
-            ? DateTime.tryParse(json['lastSeen'] as String)
-            : null,
-      );
+    id: json['id'] as String? ?? '',
+    name: json['name'] as String? ?? 'User',
+    email: json['email'] as String? ?? '',
+    avatarUrl: json['avatarUrl'] as String? ?? '',
+    status: json['status'] as String? ?? '',
+    bio: json['bio'] as String? ?? '',
+    isOnline: json['isOnline'] as bool? ?? false,
+    lastSeen: json['lastSeen'] != null
+        ? DateTime.tryParse(json['lastSeen'] as String)
+        : null,
+  );
 }

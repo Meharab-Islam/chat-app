@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
 
@@ -55,7 +56,9 @@ class ChatFilterChips extends StatelessWidget {
                 border: Border.all(
                   color: isSelected
                       ? primary
-                      : (isDark ? const Color(0xFF27272A) : const Color(0xFFE2E8F0)),
+                      : (isDark
+                            ? const Color(0xFF27272A)
+                            : const Color(0xFFE2E8F0)),
                   width: 1,
                 ),
               ),
@@ -67,7 +70,9 @@ class ChatFilterChips extends StatelessWidget {
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     color: isSelected
                         ? Colors.white
-                        : (isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary),
+                        : (isDark
+                              ? AppColors.darkTextSecondary
+                              : AppColors.lightTextSecondary),
                   ),
                 ),
               ),
@@ -78,4 +83,3 @@ class ChatFilterChips extends StatelessWidget {
     );
   }
 }
-

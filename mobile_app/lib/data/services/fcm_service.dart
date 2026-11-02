@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
+
 import 'api_client.dart';
 import 'notification_service.dart';
 
@@ -18,10 +19,12 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     }
   }
 
-  final title = message.notification?.title ?? message.data['title'] ?? 'New Message';
+  final title =
+      message.notification?.title ?? message.data['title'] ?? 'New Message';
   final body = message.notification?.body ?? message.data['body'] ?? '';
   final chatId = message.data['chatId'] ?? '';
-  final imageUrl = message.data['imageUrl'] ?? message.notification?.android?.imageUrl;
+  final imageUrl =
+      message.data['imageUrl'] ?? message.notification?.android?.imageUrl;
 
   if (chatId.toString().isNotEmpty && message.notification == null) {
     try {
@@ -93,10 +96,14 @@ class FcmService {
               .catchError((_) {});
         }
 
-        final title = message.notification?.title ?? message.data['title'] ?? 'New Message';
+        final title =
+            message.notification?.title ??
+            message.data['title'] ??
+            'New Message';
         final body = message.notification?.body ?? message.data['body'] ?? '';
         final chatId = message.data['chatId'] ?? '';
-        final imageUrl = message.data['imageUrl'] ?? message.notification?.android?.imageUrl;
+        final imageUrl =
+            message.data['imageUrl'] ?? message.notification?.android?.imageUrl;
 
         if (chatId.toString().isNotEmpty) {
           NotificationService.instance.showChatNotification(

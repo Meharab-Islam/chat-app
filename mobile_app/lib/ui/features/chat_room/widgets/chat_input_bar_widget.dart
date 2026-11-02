@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../../data/services/voice_recording_service.dart';
 import '../../../core/design_system/app_colors.dart';
 
 class ChatInputBarWidget extends StatefulWidget {
   final ValueChanged<String> onSendText;
   final VoidCallback onPickMedia;
-  final VoidCallback? onPickMixedMedia;
-  final VoidCallback? onPickAudio;
+  final VoidCallback onPickAudio;
   final VoidCallback onSendFiles;
   final ValueChanged<File> onSendVoice;
   final bool hasSelectedMedia;
@@ -18,8 +19,7 @@ class ChatInputBarWidget extends StatefulWidget {
     super.key,
     required this.onSendText,
     required this.onPickMedia,
-    this.onPickMixedMedia,
-    this.onPickAudio,
+    required this.onPickAudio,
     required this.onSendFiles,
     required this.onSendVoice,
     this.hasSelectedMedia = false,
@@ -64,7 +64,10 @@ class _ChatInputBarWidgetState extends State<ChatInputBarWidget> {
   Future<void> _startRecording() async {
     final started = await _voiceService.startRecording();
     if (started) {
-      setState(() { _isRecording = true; _recordSeconds = 0; });
+      setState(() {
+        _isRecording = true;
+        _recordSeconds = 0;
+      });
       _recordTimer = Timer.periodic(const Duration(seconds: 1), (_) {
         if (mounted) setState(() => _recordSeconds++);
       });
@@ -122,10 +125,16 @@ class _ChatInputBarWidgetState extends State<ChatInputBarWidget> {
         Container(
           width: 10.r,
           height: 10.r,
-          decoration: const BoxDecoration(color: AppColors.danger, shape: BoxShape.circle),
+          decoration: const BoxDecoration(
+            color: AppColors.danger,
+            shape: BoxShape.circle,
+          ),
         ),
         SizedBox(width: 8.w),
-        Text('Recording $mins:$secs', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp)),
+        Text(
+          'Recording $mins:$secs',
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14.sp),
+        ),
         const Spacer(),
         IconButton(
           icon: Icon(Icons.send_rounded, color: primary),
@@ -141,8 +150,15 @@ class _ChatInputBarWidgetState extends State<ChatInputBarWidget> {
       children: [
         IconButton(
           icon: Icon(Icons.add_circle_outline_rounded, size: 24.r),
-          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
-          onPressed: () => _showAttachmentSheet(context),
+          color: isDark
+              ? AppColors.darkTextSecondary
+              : AppColors.lightTextSecondary,
+          onPressed: () => ChatAttachmentSheet.show(
+            context: context,
+            onPickMedia: widget.onPickMedia,
+            onPickAudio: widget.onPickAudio,
+            onSendFiles: widget.onSendFiles,
+          ),
         ),
         Expanded(
           child: Container(
@@ -151,7 +167,9 @@ class _ChatInputBarWidgetState extends State<ChatInputBarWidget> {
               color: isDark ? AppColors.darkCard : AppColors.lightCard,
               borderRadius: BorderRadius.circular(22.r),
               border: Border.all(
-                color: isDark ? Colors.white.withAlpha(12) : Colors.black.withAlpha(8),
+                color: isDark
+                    ? Colors.white.withAlpha(12)
+                    : Colors.black.withAlpha(8),
                 width: 0.8,
               ),
             ),
@@ -205,39 +223,47 @@ class _ChatInputBarWidgetState extends State<ChatInputBarWidget> {
   void _showAttachmentSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20.r))),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
       builder: (ctx) => SafeArea(
         child: Wrap(
           children: [
             ListTile(
-              leading: const Icon(Icons.perm_media_outlined, color: Colors.blueAccent),
-              title: const Text('Audio & Video Mixed (Gallery / Device)'),
-              subtitle: const Text('Pick audio, video, & images together'),
-              onTap: () { Navigator.pop(ctx); (widget.onPickMixedMedia ?? widget.onPickMedia)(); },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
+              leading: const Icon(
+                Icons.photo_library_outlined,
+                color: Colors.blueAccent,
+              ),
               title: const Text('Photos & Videos (Gallery)'),
               subtitle: const Text('Select multiple photos & videos'),
-              onTap: () { Navigator.pop(ctx); widget.onPickMedia(); },
+              onTap: () {
+                Navigator.pop(ctx);
+                widget.onPickMedia();
+              },
             ),
             ListTile(
-              leading: const Icon(Icons.audiotrack_outlined, color: Colors.amber),
+              leading: const Icon(
+                Icons.audiotrack_outlined,
+                color: Colors.amber,
+              ),
               title: const Text('Audio & Music'),
               subtitle: const Text('Select songs or audio recordings'),
-              onTap: () { Navigator.pop(ctx); (widget.onPickAudio ?? widget.onPickMedia)(); },
+              onTap: () {
+                Navigator.pop(ctx);
+                widget.onPickAudio();
+              },
             ),
             ListTile(
-              leading: const Icon(Icons.insert_drive_file_outlined),
+              leading: const Icon(
+                Icons.insert_drive_file_outlined,
+                color: Colors.teal,
+              ),
               title: const Text('Document & Files (PDF, APK, ZIP)'),
               subtitle: const Text('Send any file or archive'),
-              onTap: () { Navigator.pop(ctx); widget.onSendFiles(); },
-            ),
-            ListTile(
-              leading: const Icon(Icons.mic_none_outlined),
-              title: const Text('Record Voice Message'),
-              subtitle: const Text('Send instant audio note'),
-              onTap: () { Navigator.pop(ctx); _startRecording(); },
+              onTap: () {
+                Navigator.pop(ctx);
+                widget.onSendFiles();
+              },
             ),
           ],
         ),

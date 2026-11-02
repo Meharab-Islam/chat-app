@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+
 import '../../../../data/models/chat_conversation_model.dart';
 import '../../../../data/repositories/chat_repository.dart';
 import '../widgets/chat_filter_chips.dart';
@@ -46,7 +48,9 @@ class ChatListViewModel extends ChangeNotifier {
         list = list.where((c) => c.isGroup).toList();
         break;
       case ChatFilterType.media:
-        list = list.where((c) => c.lastMessage?.mediaType.isMedia ?? false).toList();
+        list = list
+            .where((c) => c.lastMessage?.mediaType.isMedia ?? false)
+            .toList();
         break;
       case ChatFilterType.online:
         list = list.where((c) => c.peerUser.isOnline).toList();
@@ -60,7 +64,8 @@ class ChatListViewModel extends ChangeNotifier {
     final query = _searchQuery.toLowerCase();
     return list.where((c) {
       final matchName = c.peerUser.name.toLowerCase().contains(query);
-      final matchMsg = c.lastMessage?.text.toLowerCase().contains(query) ?? false;
+      final matchMsg =
+          c.lastMessage?.text.toLowerCase().contains(query) ?? false;
       return matchName || matchMsg;
     }).toList();
   }

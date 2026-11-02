@@ -4,9 +4,12 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
+  connectivity_plus
   file_selector_windows
   firebase_core
+  flutter_webrtc
   gal
+  livekit_client
   permission_handler_windows
   record_windows
 )

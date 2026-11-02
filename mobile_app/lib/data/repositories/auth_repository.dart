@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import '../models/user_model.dart';
 import '../services/auth_service.dart';
 import '../services/storage_service.dart';
@@ -7,10 +8,7 @@ class AuthRepository {
   final AuthService authService;
   final StorageService storageService;
 
-  AuthRepository({
-    required this.authService,
-    required this.storageService,
-  }) {
+  AuthRepository({required this.authService, required this.storageService}) {
     final savedUser = storageService.getSavedUser();
     final hasToken = storageService.hasValidToken();
     // Strictly require a saved user with valid auth token. Reject any fake/demo session.

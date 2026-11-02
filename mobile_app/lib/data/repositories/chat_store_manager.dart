@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import '../models/chat_conversation_model.dart';
 import '../models/message_model.dart';
 import '../services/media_service.dart';
@@ -12,7 +13,8 @@ class ChatStoreManager {
 
   final List<ChatConversationModel> conversations = [];
   final Map<String, List<MessageModel>> messagesByConv = {};
-  final streamController = StreamController<List<ChatConversationModel>>.broadcast();
+  final streamController =
+      StreamController<List<ChatConversationModel>>.broadcast();
 
   ChatStoreManager({
     required this.mediaService,
@@ -27,7 +29,10 @@ class ChatStoreManager {
       final raw = storageService.getCachedConversations();
       if (raw != null && raw.isNotEmpty) {
         final list = (jsonDecode(raw) as List)
-            .map((item) => ChatConversationModel.fromJson(item as Map<String, dynamic>))
+            .map(
+              (item) =>
+                  ChatConversationModel.fromJson(item as Map<String, dynamic>),
+            )
             .toList();
         if (list.isNotEmpty && conversations.isEmpty) {
           conversations.addAll(list);
@@ -45,7 +50,8 @@ class ChatStoreManager {
   }
 
   List<MessageModel> getCachedMessagesFor(String conversationId) {
-    if (messagesByConv.containsKey(conversationId) && messagesByConv[conversationId]!.isNotEmpty) {
+    if (messagesByConv.containsKey(conversationId) &&
+        messagesByConv[conversationId]!.isNotEmpty) {
       return messagesByConv[conversationId]!;
     }
     try {
@@ -137,7 +143,10 @@ class ChatStoreManager {
     if (list != null) {
       final idx = list.indexWhere((m) => m.id == msgId);
       if (idx != -1) {
-        list[idx] = list[idx].copyWith(isUnsent: true, text: 'This message was unsent');
+        list[idx] = list[idx].copyWith(
+          isUnsent: true,
+          text: 'This message was unsent',
+        );
       }
     }
     streamController.add(conversations);
@@ -175,4 +184,3 @@ class ChatStoreManager {
     return null;
   }
 }
-

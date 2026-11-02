@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../data/models/message_model.dart';
 import '../../../../data/services/media_service.dart';
 import '../../../core/widgets/app_cached_image.dart';
@@ -23,14 +24,18 @@ class _ImageViewerViewState extends State<ImageViewerView> {
     setState(() => _isSaving = true);
 
     final mediaService = context.read<MediaService>();
-    final success = await mediaService.saveImageToGallery(widget.message.mediaUrl!);
+    final success = await mediaService.saveImageToGallery(
+      widget.message.mediaUrl!,
+    );
 
     if (mounted) {
       setState(() => _isSaving = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            success ? 'Image saved to gallery!' : 'Failed to save image to gallery.',
+            success
+                ? 'Image saved to gallery!'
+                : 'Failed to save image to gallery.',
           ),
           behavior: SnackBarBehavior.floating,
         ),
@@ -83,4 +88,3 @@ class _ImageViewerViewState extends State<ImageViewerView> {
     );
   }
 }
-

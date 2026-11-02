@@ -116,22 +116,22 @@ class MessageModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'conversationId': conversationId,
-        'senderId': senderId,
-        'text': text,
-        'mediaUrl': mediaUrl,
-        'attachmentUrls': attachmentUrls,
-        'mediaType': mediaType.name,
-        'fileName': fileName,
-        'fileSize': fileSize,
-        'status': status,
-        'timestamp': timestamp.toIso8601String(),
-        'isForwarded': isForwarded,
-        'isUnsent': isUnsent,
-        'replyToId': replyToId,
-        'replyToText': replyToText,
-      };
+    'id': id,
+    'conversationId': conversationId,
+    'senderId': senderId,
+    'text': text,
+    'mediaUrl': mediaUrl,
+    'attachmentUrls': attachmentUrls,
+    'mediaType': mediaType.name,
+    'fileName': fileName,
+    'fileSize': fileSize,
+    'status': status,
+    'timestamp': timestamp.toIso8601String(),
+    'isForwarded': isForwarded,
+    'isUnsent': isUnsent,
+    'replyToId': replyToId,
+    'replyToText': replyToText,
+  };
 
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     String? resolvedMediaUrl;
@@ -164,7 +164,10 @@ class MessageModel {
         type = MessageMediaType.video;
       } else if (rawType == 'audio') {
         type = MessageMediaType.audio;
-      } else if (rawType == 'zip' || fn.endsWith('.zip') || fn.endsWith('.rar') || fn.endsWith('.7z')) {
+      } else if (rawType == 'zip' ||
+          fn.endsWith('.zip') ||
+          fn.endsWith('.rar') ||
+          fn.endsWith('.7z')) {
         type = MessageMediaType.zip;
       } else {
         type = MessageMediaType.file;
@@ -191,7 +194,8 @@ class MessageModel {
 
     return MessageModel(
       id: json['id'] as String,
-      conversationId: json['chatId'] as String? ?? json['conversationId'] as String? ?? '',
+      conversationId:
+          json['chatId'] as String? ?? json['conversationId'] as String? ?? '',
       senderId: json['senderId'] as String,
       text: json['text'] as String? ?? '',
       mediaUrl: resolvedMediaUrl,
@@ -200,11 +204,16 @@ class MessageModel {
       fileName: fileName,
       fileSize: fileSize,
       status: json['status'] as String? ?? 'sent',
-      timestamp: DateTime.tryParse(json['createdAt'] as String? ?? json['timestamp'] as String? ?? '') ?? DateTime.now(),
+      timestamp:
+          DateTime.tryParse(
+            json['createdAt'] as String? ?? json['timestamp'] as String? ?? '',
+          ) ??
+          DateTime.now(),
       isForwarded: json['isForwarded'] as bool? ?? false,
       isUnsent: json['isUnsent'] as bool? ?? false,
       originalSenderName: json['originalSenderName'] as String?,
-      senderName: json['sender']?['name'] as String? ?? json['senderName'] as String?,
+      senderName:
+          json['sender']?['name'] as String? ?? json['senderName'] as String?,
       replyToId: json['replyToId'] as String?,
       replyToText: json['replyTo']?['text'] as String?,
       reactions: reactionsMap,

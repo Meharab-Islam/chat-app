@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_spacing.dart';
 import '../../../core/design_system/app_typography.dart';
@@ -76,13 +77,20 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final textPrimary = isDark
+        ? AppColors.darkTextPrimary
+        : AppColors.lightTextPrimary;
+    final textSecondary = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
 
     return AlertDialog(
       backgroundColor: theme.scaffoldBackgroundColor,
       shape: RoundedRectangleBorder(borderRadius: AppSpacing.radiusLg),
-      title: Text('Edit Profile', style: AppTypography.headingSmall(textPrimary)),
+      title: Text(
+        'Edit Profile',
+        style: AppTypography.headingSmall(textPrimary),
+      ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -96,7 +104,10 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                 hintText: 'Enter your name',
                 prefixIcon: const Icon(Icons.person_outline),
                 border: OutlineInputBorder(borderRadius: AppSpacing.radiusMd),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12.w,
+                  vertical: 10.h,
+                ),
               ),
             ),
             SizedBox(height: 16.h),
@@ -109,7 +120,10 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                 hintText: 'e.g. Available, At work, In a meeting...',
                 prefixIcon: const Icon(Icons.info_outline),
                 border: OutlineInputBorder(borderRadius: AppSpacing.radiusMd),
-                contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 12.w,
+                  vertical: 10.h,
+                ),
               ),
             ),
           ],
@@ -120,11 +134,7 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
           onPressed: _isSaving ? null : () => Navigator.pop(context),
           child: Text('Cancel', style: TextStyle(color: textSecondary)),
         ),
-        AppButton(
-          text: 'Save',
-          isLoading: _isSaving,
-          onPressed: _handleSave,
-        ),
+        AppButton(text: 'Save', isLoading: _isSaving, onPressed: _handleSave),
       ],
     );
   }

@@ -52,14 +52,14 @@ class ChatConversationModel {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'type': type,
-        'peerUser': peerUser.toJson(),
-        'lastMessage': lastMessage?.toJson(),
-        'unreadCount': unreadCount,
-        'lastReadMessageId': lastReadMessageId,
-        'updatedAt': updatedAt.toIso8601String(),
-      };
+    'id': id,
+    'type': type,
+    'peerUser': peerUser.toJson(),
+    'lastMessage': lastMessage?.toJson(),
+    'unreadCount': unreadCount,
+    'lastReadMessageId': lastReadMessageId,
+    'updatedAt': updatedAt.toIso8601String(),
+  };
 
   factory ChatConversationModel.fromJson(Map<String, dynamic> json) {
     UserModel peer;
@@ -71,7 +71,9 @@ class ChatConversationModel {
         email: u['email'] as String? ?? '',
         avatarUrl: ApiClient.resolveUrl(u['avatarUrl'] as String?),
         isOnline: u['isOnline'] as bool? ?? false,
-        lastSeen: u['lastSeen'] != null ? DateTime.tryParse(u['lastSeen'] as String) : null,
+        lastSeen: u['lastSeen'] != null
+            ? DateTime.tryParse(u['lastSeen'] as String)
+            : null,
       );
     } else if (json['peerUser'] != null) {
       peer = UserModel.fromJson(json['peerUser'] as Map<String, dynamic>);
@@ -87,7 +89,9 @@ class ChatConversationModel {
     MessageModel? lastMsg;
     if (json['lastMessage'] != null) {
       final lm = json['lastMessage'] as Map<String, dynamic>;
-      final hasAtt = lm['hasAttachments'] == true || (lm['attachments'] as List?)?.isNotEmpty == true;
+      final hasAtt =
+          lm['hasAttachments'] == true ||
+          (lm['attachments'] as List?)?.isNotEmpty == true;
       final rawType = lm['type'] as String? ?? '';
       MessageMediaType mType = MessageMediaType.none;
       if (rawType == 'media') {
@@ -108,7 +112,9 @@ class ChatConversationModel {
         mediaType: mType,
         status: lm['status'] as String? ?? 'sent',
         isUnsent: lm['isUnsent'] as bool? ?? false,
-        timestamp: DateTime.tryParse(lm['createdAt'] as String? ?? '') ?? DateTime.now(),
+        timestamp:
+            DateTime.tryParse(lm['createdAt'] as String? ?? '') ??
+            DateTime.now(),
       );
     }
 
@@ -117,13 +123,15 @@ class ChatConversationModel {
       for (final m in json['members'] as List) {
         if (m is Map<String, dynamic> && m['user'] != null) {
           final u = m['user'] as Map<String, dynamic>;
-          membersList.add(UserModel(
-            id: u['id'] as String? ?? '',
-            name: u['name'] as String? ?? 'User',
-            email: u['email'] as String? ?? '',
-            avatarUrl: ApiClient.resolveUrl(u['avatarUrl'] as String?),
-            isOnline: u['isOnline'] as bool? ?? false,
-          ));
+          membersList.add(
+            UserModel(
+              id: u['id'] as String? ?? '',
+              name: u['name'] as String? ?? 'User',
+              email: u['email'] as String? ?? '',
+              avatarUrl: ApiClient.resolveUrl(u['avatarUrl'] as String?),
+              isOnline: u['isOnline'] as bool? ?? false,
+            ),
+          );
         }
       }
     }
@@ -135,7 +143,9 @@ class ChatConversationModel {
       lastMessage: lastMsg,
       unreadCount: json['unreadCount'] as int? ?? 0,
       lastReadMessageId: json['lastReadMessageId'] as String?,
-      updatedAt: DateTime.tryParse(json['updatedAt'] as String? ?? '') ?? DateTime.now(),
+      updatedAt:
+          DateTime.tryParse(json['updatedAt'] as String? ?? '') ??
+          DateTime.now(),
       memberCount: (json['members'] as List?)?.length ?? 0,
       members: membersList,
     );
