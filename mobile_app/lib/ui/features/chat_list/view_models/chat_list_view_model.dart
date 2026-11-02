@@ -17,6 +17,13 @@ class ChatListViewModel extends ChangeNotifier {
       _conversations = list;
       notifyListeners();
     });
+    chatRepository.loadConversations();
+  }
+
+  Future<void> loadConversations() async {
+    await chatRepository.loadConversations();
+    _conversations = chatRepository.conversations;
+    notifyListeners();
   }
 
   List<ChatConversationModel> get rawConversations => _conversations;

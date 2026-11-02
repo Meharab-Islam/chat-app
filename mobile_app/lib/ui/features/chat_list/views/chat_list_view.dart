@@ -53,39 +53,46 @@ class ChatListView extends StatelessWidget {
               child: Consumer<ChatListViewModel>(
                 builder: (context, vm, _) {
                   final list = vm.conversations;
-                  if (list.isEmpty) {
-                    return _buildEmptyState(textSecondary);
-                  }
-
-                  return ListView.separated(
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: list.length,
-                    separatorBuilder: (context, index) => Divider(
-                      height: 1,
-                      indent: 80.w,
-                      endIndent: 16.w,
-                      color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
-                    ),
-                    itemBuilder: (context, index) {
-                      final item = list[index];
-                      return ChatTileWidget(
-                        conversation: item,
-                        currentUserId: vm.currentUserId,
-                        onTap: () {
-                          vm.markChatAsRead(item.id);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ChatRoomView(
-                                conversationId: item.id,
-                                peerUser: item.peerUser,
-                              ),
+                  return RefreshIndicator(
+                    onRefresh: () => vm.loadConversations(),
+                    child: list.isEmpty
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                            children: [
+                              SizedBox(height: 120.h),
+                              _buildEmptyState(textSecondary),
+                            ],
+                          )
+                        : ListView.separated(
+                            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                            itemCount: list.length,
+                            separatorBuilder: (context, index) => Divider(
+                              height: 1,
+                              indent: 80.w,
+                              endIndent: 16.w,
+                              color: isDark ? AppColors.darkDivider : AppColors.lightDivider,
                             ),
-                          );
-                        },
-                        onLongPress: () => _showOptions(context, vm, item),
-                      );
-                    },
+                            itemBuilder: (context, index) {
+                              final item = list[index];
+                              return ChatTileWidget(
+                                conversation: item,
+                                currentUserId: vm.currentUserId,
+                                onTap: () {
+                                  vm.markChatAsRead(item.id);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ChatRoomView(
+                                        conversationId: item.id,
+                                        peerUser: item.peerUser,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onLongPress: () => _showOptions(context, vm, item),
+                              );
+                            },
+                          ),
                   );
                 },
               ),

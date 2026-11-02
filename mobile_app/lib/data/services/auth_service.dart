@@ -124,7 +124,7 @@ class AuthService {
             id: userMap['id'] ?? 'usr_google',
             name: userMap['name'] ?? 'Google User',
             email: userMap['email'] ?? '',
-            avatarUrl: userMap['avatarUrl'] ?? '',
+            avatarUrl: ApiClient.resolveUrl(userMap['avatarUrl'] as String? ?? ''),
             isOnline: true,
           );
         } else {

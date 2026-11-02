@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../data/services/api_client.dart';
 import '../design_system/app_colors.dart';
 import 'app_cached_image.dart';
 
@@ -27,18 +28,19 @@ class AppAvatar extends StatelessWidget {
         ? name.trim().split(' ').map((e) => e.isNotEmpty ? e[0] : '').take(2).join().toUpperCase()
         : '?';
 
+    final resolvedUrl = ApiClient.resolveUrl(imageUrl);
     Widget avatarWidget;
-    if (imageUrl != null && imageUrl!.isNotEmpty) {
-      if (imageUrl!.startsWith('http://') || imageUrl!.startsWith('https://')) {
+    if (resolvedUrl.isNotEmpty) {
+      if (resolvedUrl.startsWith('http://') || resolvedUrl.startsWith('https://')) {
         avatarWidget = AppCachedImage(
-          imageUrl: imageUrl!,
+          imageUrl: resolvedUrl,
           width: avatarSize,
           height: avatarSize,
           fit: BoxFit.cover,
           borderRadius: BorderRadius.circular(avatarSize / 2),
         );
       } else {
-        final file = File(imageUrl!);
+        final file = File(resolvedUrl);
         avatarWidget = ClipRRect(
           borderRadius: BorderRadius.circular(avatarSize / 2),
           child: Image.file(

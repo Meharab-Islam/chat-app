@@ -2,18 +2,32 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import '../../../../data/models/user_model.dart';
 import '../../../../data/repositories/auth_repository.dart';
+import '../../../../data/repositories/chat_repository.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final AuthRepository authRepository;
+  final ChatRepository? chatRepository;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _isInitialized = false;
 
-  AuthViewModel({required this.authRepository});
+  AuthViewModel({
+    required this.authRepository,
+    this.chatRepository,
+  });
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   UserModel? get currentUser => authRepository.currentUser;
   bool get isAuthenticated => authRepository.isAuthenticated;
+  bool get isInitialized => _isInitialized;
+
+  void completeInitialization() {
+    if (!_isInitialized) {
+      _isInitialized = true;
+      notifyListeners();
+    }
+  }
 
   Future<bool> signInWithGoogle() async {
     _setLoading(true);
@@ -26,6 +40,7 @@ class AuthViewModel extends ChangeNotifier {
         notifyListeners();
         return false;
       }
+      chatRepository?.updateCurrentUser(user.id);
       return true;
     } catch (e) {
       final err = e.toString();
@@ -93,6 +108,7 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<void> signOut() async {
     await authRepository.signOut();
+    chatRepository?.clearStore();
     notifyListeners();
   }
 

@@ -22,6 +22,7 @@ import 'ui/features/auth/views/login_view.dart';
 import 'ui/features/chat_list/view_models/chat_list_view_model.dart';
 import 'ui/features/chat_list/views/chat_list_view.dart';
 import 'ui/features/settings/view_models/settings_view_model.dart';
+import 'ui/features/splash/views/splash_view.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,7 +74,10 @@ Future<void> main() async {
         Provider<AuthRepository>.value(value: authRepo),
         Provider<ChatRepository>.value(value: chatRepo),
         ChangeNotifierProvider(
-          create: (_) => AuthViewModel(authRepository: authRepo),
+          create: (_) => AuthViewModel(
+            authRepository: authRepo,
+            chatRepository: chatRepo,
+          ),
         ),
         ChangeNotifierProvider(
           create: (_) => ChatListViewModel(chatRepository: chatRepo),
@@ -121,10 +125,19 @@ class MinimalChatApp extends StatelessWidget {
           themeMode: themeProvider.themeMode,
           home: Consumer<AuthViewModel>(
             builder: (context, authVM, _) {
-              if (authVM.isAuthenticated) {
-                return const ChatListView();
-              }
-              return const LoginView();
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                switchInCurve: Curves.easeInOut,
+                switchOutCurve: Curves.easeInOut,
+                child: !authVM.isInitialized
+                    ? SplashView(
+                        key: const ValueKey('splash_view'),
+                        onComplete: authVM.completeInitialization,
+                      )
+                    : (authVM.isAuthenticated
+                        ? const ChatListView(key: ValueKey('chat_list_view'))
+                        : const LoginView(key: ValueKey('login_view'))),
+              );
             },
           ),
         );

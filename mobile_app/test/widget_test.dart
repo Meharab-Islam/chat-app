@@ -69,6 +69,9 @@ void main() {
 
     expect(authVM.isAuthenticated, false);
     expect(authVM.errorMessage, null);
+    expect(authVM.isInitialized, false);
+    authVM.completeInitialization();
+    expect(authVM.isInitialized, true);
   });
 
   test('AuthRepository strictly blocks unauthenticated users without backend token', () async {

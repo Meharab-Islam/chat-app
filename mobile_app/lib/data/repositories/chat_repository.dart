@@ -16,7 +16,7 @@ class ChatRepository {
   final SocketService socketService;
   final MediaService mediaService;
   final StorageService storageService;
-  final String currentUserId;
+  String currentUserId;
   String? activeConversationId;
   late final ChatStoreManager _store;
   late final ChatApiService _api;
@@ -36,6 +36,17 @@ class ChatRepository {
     );
     _initSocketListeners();
     loadConversations();
+  }
+
+  void updateCurrentUser(String userId) {
+    currentUserId = userId;
+    _store.updateCurrentUserId(userId);
+    loadConversations();
+  }
+
+  void clearStore() {
+    currentUserId = '';
+    _store.clearStore();
   }
 
   Stream<List<ChatConversationModel>> get conversationsStream => _store.streamController.stream;

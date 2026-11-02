@@ -7,7 +7,7 @@ import '../services/storage_service.dart';
 class ChatStoreManager {
   final MediaService mediaService;
   final StorageService storageService;
-  final String currentUserId;
+  String currentUserId;
 
   final List<ChatConversationModel> conversations = [];
   final Map<String, List<MessageModel>> messagesByConv = {};
@@ -18,6 +18,16 @@ class ChatStoreManager {
     required this.storageService,
     required this.currentUserId,
   });
+
+  void updateCurrentUserId(String id) {
+    currentUserId = id;
+  }
+
+  void clearStore() {
+    conversations.clear();
+    messagesByConv.clear();
+    streamController.add([]);
+  }
 
   void addMessageToStore(String conversationId, MessageModel message) {
     final list = messagesByConv.putIfAbsent(conversationId, () => []);
