@@ -100,11 +100,7 @@ export class UserController {
    */
   static async searchUsers(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const query = (req.query.q as string) || '';
-      if (!query.trim()) {
-        sendSuccess(res, [], 'Empty query');
-        return;
-      }
+      const query = ((req.query.q as string) || '').trim();
       const users = await UserService.searchUsers(query, req.user!.userId);
       sendSuccess(res, users, 'Users retrieved');
     } catch (error: any) {

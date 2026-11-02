@@ -21,7 +21,7 @@ export const NewChatModal: React.FC<Props> = ({ isOpen, onClose }) => {
     const fetchUsers = async () => {
       setIsLoading(true);
       try {
-        const list = await api.searchUsers(query.trim() || 'a');
+        const list = await api.searchUsers(query.trim());
         setUsers(list);
       } catch (err) {
         console.error(err);

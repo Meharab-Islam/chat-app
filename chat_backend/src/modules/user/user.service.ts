@@ -169,18 +169,17 @@ export class UserService {
    * Search users by name or email
    */
   static async searchUsers(query: string, excludeUserId: string) {
+    const whereClause: any = {
+      id: { not: excludeUserId },
+    };
+    if (query) {
+      whereClause.OR = [
+        { name: { contains: query } },
+        { email: { contains: query } },
+      ];
+    }
     return prisma.user.findMany({
-      where: {
-        AND: [
-          { id: { not: excludeUserId } },
-          {
-            OR: [
-              { name: { contains: query } },
-              { email: { contains: query } },
-            ],
-          },
-        ],
-      },
+      where: whereClause,
       select: {
         id: true,
         email: true,
@@ -189,7 +188,8 @@ export class UserService {
         status: true,
         isOnline: true,
       },
-      take: 20,
+      take: 50,
+      orderBy: { name: 'asc' },
     });
   }
 }
