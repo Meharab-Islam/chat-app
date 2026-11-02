@@ -106,7 +106,7 @@ class CallViewModel extends ChangeNotifier {
       }
 
       await callService.connect(
-        url: tokenData['url'] as String? ?? 'ws://107.174.137.29:7880',
+        url: tokenData['url'] as String? ?? 'wss://sp-live-77aj0nb6.livekit.cloud',
         token: tokenData['token'] as String,
         isVideo: callType == 'video',
         onRoomUpdated: () => notifyListeners(),
@@ -154,7 +154,7 @@ class CallViewModel extends ChangeNotifier {
       if (tokenData == null) throw Exception('No token');
 
       await callService.connect(
-        url: tokenData['url'] as String? ?? 'ws://107.174.137.29:7880',
+        url: tokenData['url'] as String? ?? 'wss://sp-live-77aj0nb6.livekit.cloud',
         token: tokenData['token'] as String,
         isVideo: call.callType == 'video',
         onRoomUpdated: () => notifyListeners(),

@@ -8,3 +8,4 @@ const router = Router();
 router.post('/token', authenticate, CallController.getToken);
 
 export default router;
+

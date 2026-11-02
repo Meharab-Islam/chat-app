@@ -38,3 +38,4 @@ class ChatReplyPreviewWidget extends StatelessWidget {
     );
   }
 }
+

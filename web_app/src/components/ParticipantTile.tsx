@@ -92,3 +92,4 @@ export const ParticipantTile: React.FC<Props> = ({ participant, isLocal = false 
     </div>
   );
 };
+

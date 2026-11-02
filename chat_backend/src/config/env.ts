@@ -29,7 +29,7 @@ export const ENV = {
   UPLOAD_DIR: process.env.UPLOAD_DIR || 'uploads',
 
   // LiveKit Group Calling
-  LIVEKIT_URL: process.env.LIVEKIT_URL || 'ws://107.174.137.29:7880',
-  LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY || 'devkey',
-  LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET || 'secret',
+  LIVEKIT_URL: process.env.LIVEKIT_URL || 'wss://sp-live-77aj0nb6.livekit.cloud',
+  LIVEKIT_API_KEY: process.env.LIVEKIT_API_KEY || 'API8RXeTebwtkfg',
+  LIVEKIT_API_SECRET: process.env.LIVEKIT_API_SECRET || 'G9lYenZnHxa5FUiXvkFBDa5n1a6WUq7hJecNA5OS8I0',
 };
